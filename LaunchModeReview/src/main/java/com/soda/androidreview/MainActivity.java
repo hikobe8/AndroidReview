@@ -71,4 +71,9 @@ public class MainActivity extends BaseActivity {
         mIntent.setClass(this, SingleInstanceAActivity.class);
         startActivity(mIntent);
     }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+    }
 }

@@ -1,1 +1,1 @@
-include ':LaunchModeReview'
+include ':LaunchModeReview', ':okhttpdemo'
