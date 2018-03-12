@@ -1,5 +1,6 @@
 package com.soda.rxjavademo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -65,4 +66,10 @@ public class MainActivity extends AppCompatActivity {
     public void switchLight(View view) {
         mSwitcher.subscribe(mLight);
     }
+
+    public void useFlowable(View view) {
+        Intent intent = new Intent(this, FlowableActivity.class);
+        startActivity(intent);
+    }
+
 }

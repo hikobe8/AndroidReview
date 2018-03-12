@@ -2,22 +2,21 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    tools:context="com.soda.rxjavademo.MainActivity">
+    tools:context="com.soda.rxjavademo.FlowableActivity">
 
     <Button
-        android:onClick="switchLight"
+        android:text="start"
+        android:onClick="start"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Light Switcher"/>
+        android:layout_height="wrap_content"/>
 
     <Button
-        android:layout_marginTop="10dp"
-        android:onClick="useFlowable"
-        android:text="useFlowable"
+        android:text="request"
+        android:onClick="request"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
