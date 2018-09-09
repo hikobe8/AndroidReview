@@ -1,1 +1,1 @@
-include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo'
+include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo', ':customizedview'
