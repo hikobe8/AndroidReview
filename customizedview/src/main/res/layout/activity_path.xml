@@ -32,6 +32,16 @@
             android:layout_height="wrap_content"
             app:direction="true"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EVEN_ODD模式"/>
+
+        <com.ray.customizedview.path.PathView
+            android:layout_width="match_parent"
+            app:fillType="even-odd"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 

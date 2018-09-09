@@ -20,16 +20,22 @@ class PathView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private var mPath: Path = Path()
     private var mRadius: Float = 0f
     private var mCCW = false
+    private var mFillType: Path.FillType = Path.FillType.WINDING
 
     init {
         val array = context?.obtainStyledAttributes(attrs, R.styleable.PathView, 0, 0)
         mCCW = array?.getBoolean(R.styleable.PathView_direction, false)!!
+        var type = array?.getInteger(R.styleable.PathView_fillType, 0)
+        when (type) {
+            Path.FillType.WINDING.ordinal -> mFillType = Path.FillType.WINDING
+            Path.FillType.EVEN_ODD.ordinal -> mFillType = Path.FillType.EVEN_ODD
+        }
         array.recycle()
         mPaint.color = Color.BLUE
         mPaint.isAntiAlias = true
 //        mPaint.style = Paint.Style.STROKE
 //        mPaint.strokeWidth = 20f
-        mPath.fillType = Path.FillType.WINDING
+        mPath.fillType = mFillType
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

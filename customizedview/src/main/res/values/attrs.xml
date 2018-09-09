@@ -3,6 +3,10 @@
 
     <declare-styleable name="PathView">
         <attr name="direction" format="boolean"/>
+        <attr name="fillType" format="enum">
+            <enum name="winding" value="0"/>
+            <enum name="even-odd" value="1"/>
+        </attr>
     </declare-styleable>
 
 </resources>
