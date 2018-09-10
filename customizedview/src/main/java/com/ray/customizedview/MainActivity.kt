@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.ray.customizedview.path.PathActivity
+import com.ray.customizedview.shader.ShaderActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,7 +14,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clickPath(view: View) {
-        PathActivity.launchActivty(this)
+        PathActivity.launchActivity(this)
+    }
+
+    fun clickShader(view: View){
+        ShaderActivity.launchActivity(this)
     }
 
 }
