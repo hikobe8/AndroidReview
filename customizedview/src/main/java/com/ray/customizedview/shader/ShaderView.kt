@@ -24,7 +24,6 @@ class CommonShaderView(context: Context?, attrs: AttributeSet?) : View(context, 
         val array = context?.obtainStyledAttributes(attrs, R.styleable.ShaderView, 0, 0)
         mTextForDraw = array?.getString(R.styleable.ShaderView_tile_mode)!!
         var type = array?.getInteger(R.styleable.PathView_fillType, 0)
-        mTileMode = Shader.TileMode.valueOf(type)
         array.recycle()
     }
 
