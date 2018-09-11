@@ -9,11 +9,11 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="ShaderView">
+    <declare-styleable name="CommonShaderView">
         <attr name="tile_mode" format="enum">
-            <enum name="clamp" value="CLAMP"/>
-            <enum name="repeat" value="REPEAT"/>
-            <enum name="mirror" value="MIRROR"/>
+            <enum name="clamp" value="0"/>
+            <enum name="repeat" value="1"/>
+            <enum name="mirror" value="2"/>
         </attr>
     </declare-styleable>
 
