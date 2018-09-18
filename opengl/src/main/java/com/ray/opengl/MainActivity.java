@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.ray.opengl.basics.SimpleGraphActivity;
 import com.ray.opengl.render.ColorfulTriangle;
+import com.ray.opengl.render.RightPolygon;
 import com.ray.opengl.render.SimpleIsoscelesRightTriangle;
 import com.ray.opengl.render.SimpleSquare;
 import com.ray.opengl.render.SimpleTriangle;
@@ -32,5 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void squareClick(View view) {
         SimpleGraphActivity.launch(this, SimpleSquare.class);
+    }
+
+    public void polygonClick(View view) {
+        SimpleGraphActivity.launch(this, RightPolygon.class);
     }
 }

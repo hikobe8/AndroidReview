@@ -32,4 +32,10 @@
         android:layout_height="wrap_content"
         android:text="正方形" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="polygonClick"
+        android:layout_height="wrap_content"
+        android:text="正多边形" />
+
 </LinearLayout>
