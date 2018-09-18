@@ -19,7 +19,7 @@ import static android.opengl.GLES20.*;
  */
 public class ColorfulTriangle extends Shape {
 
-    private static final int COORDINATE_PER_VERTEX = 2;
+    private static final int COORDINATE_PER_VERTEX = 3;
 
     private float triangleCoordinates[] = {
             1f,  1f, 0.0f, // top

@@ -26,4 +26,10 @@
         android:layout_height="wrap_content"
         android:text="彩色三角形" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="squareClick"
+        android:layout_height="wrap_content"
+        android:text="正方形" />
+
 </LinearLayout>

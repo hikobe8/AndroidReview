@@ -13,7 +13,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class SimpleIsoscelesRightTriangle extends Shape {
 
-    private static final int COORDINATE_PER_VERTEX = 2;
+    private static final int COORDINATE_PER_VERTEX = 3;
 
     private float triangleCoordinates[] = {
             1f,  1f, 0.0f, // top
