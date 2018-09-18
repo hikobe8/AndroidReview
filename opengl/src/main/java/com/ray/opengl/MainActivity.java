@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ray.opengl.basics.SimpleGraphActivity;
+import com.ray.opengl.render.SimpleIsoscelesRightTriangle;
+import com.ray.opengl.render.SimpleTriangle;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,6 +18,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void simpleTriangleClick(View view) {
-        SimpleGraphActivity.launch(this);
+        SimpleGraphActivity.launch(this, SimpleTriangle.class);
+    }
+
+    public void simpleIsoscelesTriangleClick(View view) {
+        SimpleGraphActivity.launch(this, SimpleIsoscelesRightTriangle.class);
     }
 }
