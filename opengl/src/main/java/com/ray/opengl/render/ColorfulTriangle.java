@@ -3,15 +3,21 @@ package com.ray.opengl.render;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static android.opengl.GLES20.*;
 
 /***
  *  Author : ryu18356@gmail.com
  *  Create at 2018-09-17 18:23
  *  description : 等腰直角三角形
  */
-public class SimpleIsoscelesRightTriangle extends Shape {
+public class ColorfulTriangle extends Shape {
 
     private static final int COORDINATE_PER_VERTEX = 2;
 
@@ -21,7 +27,12 @@ public class SimpleIsoscelesRightTriangle extends Shape {
             1f, -1f, 0.0f  // bottom right
     };
 
-    protected float color[] = { 1.0f, 1.0f, 1.0f, 1.0f }; //白色
+    //设置颜色
+    private float color[] = {
+            0.0f, 1.0f, 0.0f, 1.0f ,
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f, 1.0f
+    };
 
     private int mPositionHandle;
     private int mColorHandle;
@@ -29,6 +40,7 @@ public class SimpleIsoscelesRightTriangle extends Shape {
     private float[] mViewMatrix = new float[16];
     private float[] mMVPMatrix = new float[16];
     private int mMatrixHandler;
+    private FloatBuffer mColorBuffer;
     private int mVertexStride = 12;
 
     @Override
@@ -38,31 +50,41 @@ public class SimpleIsoscelesRightTriangle extends Shape {
 
     @Override
     public String getVertexShaderCodeString() {
-        return "attribute vec4 vPosition;\n" +
-                "uniform mat4 vMatrix;\n" +
-                "void main() {\n" +
-                "    gl_Position = vMatrix*vPosition;\n" +
+        return  "attribute vec4 vPosition;" +
+                "uniform mat4 vMatrix;"+
+                "varying  vec4 vColor;"+
+                "attribute vec4 aColor;"+
+                "void main() {" +
+                "  gl_Position = vMatrix*vPosition;" +
+                "  vColor=aColor;"+
                 "}";
     }
 
     @Override
     public String getFragmentShaderCodeString() {
-        return "precision mediump float;\n" +
-                    " uniform vec4 vColor;\n" +
-                    " void main() {\n" +
-                    "     gl_FragColor = vColor;\n" +
-                    " }";
+        return  "precision mediump float;" +
+                "varying vec4 vColor;" +
+                "void main() {" +
+                "  gl_FragColor = vColor;" +
+                "}";
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        ByteBuffer bb = ByteBuffer.allocateDirect(
+                color.length * 4);
+        bb.order(ByteOrder.nativeOrder());
+        //将坐标数据转换为FloatBuffer，用以传入给OpenGL ES程序
+        mColorBuffer = bb.asFloatBuffer();
+        mColorBuffer.put(color);
+        mColorBuffer.position(0);
         super.onSurfaceCreated(gl, config);
         //获取顶点着色器的vMatrix成员句柄
-        mMatrixHandler= GLES20.glGetUniformLocation(mProgram,"vMatrix");
+        mMatrixHandler= glGetUniformLocation(mProgram,"vMatrix");
         //获取顶点着色器的vPosition成员句柄
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        mPositionHandle = glGetAttribLocation(mProgram, "vPosition");
         //获取片元着色器的vColor成员的句柄
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+        mColorHandle = glGetAttribLocation(mProgram, "aColor");
     }
 
     @Override
@@ -81,19 +103,22 @@ public class SimpleIsoscelesRightTriangle extends Shape {
     @Override
     public void onDrawFrame(GL10 gl) {
         super.onDrawFrame(gl);
-        //启用三角形顶点的句柄
         //指定vMatrix的值
-        GLES20.glUniformMatrix4fv(mMatrixHandler,1,false,mMVPMatrix,0);
+        glUniformMatrix4fv(mMatrixHandler,1,false,mMVPMatrix,0);
+        //启用三角形顶点的句柄
+        glEnableVertexAttribArray(mPositionHandle);
         //准备三角形的坐标数据
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glVertexAttribPointer(mPositionHandle, COORDINATE_PER_VERTEX,
-                GLES20.GL_FLOAT, false,
+        glVertexAttribPointer(mPositionHandle, COORDINATE_PER_VERTEX,
+                GL_FLOAT, false,
                 mVertexStride, mVertexBuffer);
         //设置绘制三角形的颜色
-        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        GLES20.glEnableVertexAttribArray(mColorHandle);
+        GLES20.glVertexAttribPointer(mColorHandle,4,
+                GLES20.GL_FLOAT,false,
+                0,mColorBuffer);
         //绘制三角形
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         //禁止顶点数组的句柄
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        glDisableVertexAttribArray(mPositionHandle);
     }
 }

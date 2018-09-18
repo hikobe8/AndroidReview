@@ -24,7 +24,7 @@ public class SimpleTriangle extends Shape {
 
     private int mPositionHandle;
     private int mColorHandle;
-
+    private int mVertexStride = 12;
 
     @Override
     public float[] getCoordinatesArray() {
@@ -65,7 +65,7 @@ public class SimpleTriangle extends Shape {
         //准备三角形的坐标数据
         GLES20.glVertexAttribPointer(mPositionHandle, COORDINATE_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
-                2, mVertexBuffer);
+                mVertexStride, mVertexBuffer);
         //设置绘制三角形的颜色
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
         //绘制三角形

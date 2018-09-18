@@ -20,4 +20,10 @@
         android:layout_height="wrap_content"
         android:text="简单等腰直角三角形" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="colorfulTriangleClick"
+        android:layout_height="wrap_content"
+        android:text="彩色三角形" />
+
 </LinearLayout>
