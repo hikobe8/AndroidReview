@@ -34,6 +34,12 @@
 
     <Button
         android:layout_width="match_parent"
+        android:onClick="circleClick"
+        android:layout_height="wrap_content"
+        android:text="圆形" />
+
+    <Button
+        android:layout_width="match_parent"
         android:onClick="polygonClick"
         android:layout_height="wrap_content"
         android:text="正多边形" />
@@ -43,5 +49,11 @@
         android:onClick="cubeClick"
         android:layout_height="wrap_content"
         android:text="正方体" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="coneClick"
+        android:layout_height="wrap_content"
+        android:text="圆锥体" />
 
 </LinearLayout>

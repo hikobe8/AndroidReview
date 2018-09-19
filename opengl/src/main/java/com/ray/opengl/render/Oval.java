@@ -1,19 +1,28 @@
 package com.ray.opengl.render;
 
-import android.opengl.GLES20;
 import android.opengl.Matrix;
-
-import java.util.Random;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import static android.opengl.GLES20.GL_FLOAT;
+import static android.opengl.GLES20.GL_TRIANGLE_FAN;
+import static android.opengl.GLES20.glDisableVertexAttribArray;
+import static android.opengl.GLES20.glDrawArrays;
+import static android.opengl.GLES20.glEnableVertexAttribArray;
+import static android.opengl.GLES20.glGetAttribLocation;
+import static android.opengl.GLES20.glGetUniformLocation;
+import static android.opengl.GLES20.glUniform4fv;
+import static android.opengl.GLES20.glUniformMatrix4fv;
+import static android.opengl.GLES20.glUseProgram;
+import static android.opengl.GLES20.glVertexAttribPointer;
+
 /***
  *  Author : ryu18356@gmail.com
  *  Create at 2018-09-17 18:23
- *  description : 正多边形
+ *  description : 圆形
  */
-public class RightPolygon extends Shape {
+public class Oval extends Shape {
 
     private static final int COORDINATE_PER_VERTEX = 3;
 
@@ -24,7 +33,7 @@ public class RightPolygon extends Shape {
     }
 
     private void createPolygonCoordinates() {
-        int count = new Random().nextInt(14) + 3;
+        int count = 360;
         triangleCoordinates = new float[count*(COORDINATE_PER_VERTEX + 2)];
         float degree = 360f / count;
         //设置中心点
@@ -51,6 +60,10 @@ public class RightPolygon extends Shape {
     private float[] mMVPMatrix = new float[16];
     private int mMatrixHandler;
     private int mVertexStride = COORDINATE_PER_VERTEX * 4;
+
+    public void setMVPMatrix(float[] MVPMatrix) {
+        mMVPMatrix = MVPMatrix;
+    }
 
     @Override
     public float[] getCoordinatesArray() {
@@ -79,11 +92,11 @@ public class RightPolygon extends Shape {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         super.onSurfaceCreated(gl, config);
         //获取顶点着色器的vMatrix成员句柄
-        mMatrixHandler= GLES20.glGetUniformLocation(mProgram,"vMatrix");
+        mMatrixHandler= glGetUniformLocation(mProgram,"vMatrix");
         //获取顶点着色器的vPosition成员句柄
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        mPositionHandle = glGetAttribLocation(mProgram, "vPosition");
         //获取片元着色器的vColor成员的句柄
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+        mColorHandle = glGetUniformLocation(mProgram, "vColor");
     }
 
     @Override
@@ -102,19 +115,24 @@ public class RightPolygon extends Shape {
     @Override
     public void onDrawFrame(GL10 gl) {
         super.onDrawFrame(gl);
+        drawFrame(gl);
+    }
+
+    public void drawFrame(GL10 gl) {
         //启用三角形顶点的句柄
         //指定vMatrix的值
-        GLES20.glUniformMatrix4fv(mMatrixHandler,1,false,mMVPMatrix,0);
+        glUseProgram(mProgram);
+        glUniformMatrix4fv(mMatrixHandler,1,false,mMVPMatrix,0);
         //准备三角形的坐标数据
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glVertexAttribPointer(mPositionHandle, COORDINATE_PER_VERTEX,
-                GLES20.GL_FLOAT, false,
+        glEnableVertexAttribArray(mPositionHandle);
+        glVertexAttribPointer(mPositionHandle, COORDINATE_PER_VERTEX,
+                GL_FLOAT, false,
                 mVertexStride, mVertexBuffer);
         //设置绘制三角形的颜色
-        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        glUniform4fv(mColorHandle, 1, color, 0);
         //绘制三角形
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, triangleCoordinates.length/3);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, triangleCoordinates.length/3);
         //禁止顶点数组的句柄
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        glDisableVertexAttribArray(mPositionHandle);
     }
 }

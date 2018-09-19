@@ -3,34 +3,34 @@ package com.ray.opengl.render;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import java.util.Random;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /***
  *  Author : ryu18356@gmail.com
  *  Create at 2018-09-17 18:23
- *  description : 正多边形
+ *  description : 圆锥形
  */
-public class RightPolygon extends Shape {
+public class Cone extends Shape {
 
     private static final int COORDINATE_PER_VERTEX = 3;
 
     private float triangleCoordinates[];
+    private Oval mOval;
 
     {
         createPolygonCoordinates();
+        mOval = new Oval();
     }
 
     private void createPolygonCoordinates() {
-        int count = new Random().nextInt(14) + 3;
+        int count = 360;
         triangleCoordinates = new float[count*(COORDINATE_PER_VERTEX + 2)];
         float degree = 360f / count;
         //设置中心点
         triangleCoordinates[0] = 0f;
         triangleCoordinates[1] = 0f;
-        triangleCoordinates[2] = 0f;
+        triangleCoordinates[2] = 2f;
         int i = 1;
         for (; i <= count ; i++) {
             triangleCoordinates[i * 3] = ((float) Math.cos((i * degree * Math.PI / 180)));
@@ -42,10 +42,7 @@ public class RightPolygon extends Shape {
         triangleCoordinates[i * 3 + 2] = 0f;
     }
 
-    protected float color[] = { 1.0f, 1.0f, 1.0f, 1.0f }; //白色
-
     private int mPositionHandle;
-    private int mColorHandle;
     private float[] mProjectMatrix = new float[16];
     private float[] mViewMatrix = new float[16];
     private float[] mMVPMatrix = new float[16];
@@ -59,31 +56,38 @@ public class RightPolygon extends Shape {
 
     @Override
     public String getVertexShaderCodeString() {
-        return "attribute vec4 vPosition;\n" +
-                "uniform mat4 vMatrix;\n" +
-                "void main() {\n" +
-                "    gl_Position = vMatrix*vPosition;\n" +
+        return "uniform mat4 vMatrix;\n" +
+                "varying vec4 vColor;\n" +
+                "attribute vec4 vPosition;\n" +
+                "\n" +
+                "void main(){\n" +
+                "    gl_Position=vMatrix*vPosition;\n" +
+                "    if(vPosition.z!=0.0){\n" +
+                "        vColor=vec4(0.0,0.0,0.0,1.0);\n" +
+                "    }else{\n" +
+                "        vColor=vec4(0.9,0.9,0.9,1.0);\n" +
+                "    }\n" +
                 "}";
     }
 
     @Override
     public String getFragmentShaderCodeString() {
         return "precision mediump float;\n" +
-                    " uniform vec4 vColor;\n" +
-                    " void main() {\n" +
-                    "     gl_FragColor = vColor;\n" +
-                    " }";
+                "varying vec4 vColor;\n" +
+                "void main(){\n" +
+                "    gl_FragColor=vColor;\n" +
+                "}";
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         super.onSurfaceCreated(gl, config);
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         //获取顶点着色器的vMatrix成员句柄
         mMatrixHandler= GLES20.glGetUniformLocation(mProgram,"vMatrix");
         //获取顶点着色器的vPosition成员句柄
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-        //获取片元着色器的vColor成员的句柄
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+        mOval.onSurfaceCreated(gl, config);
     }
 
     @Override
@@ -92,9 +96,9 @@ public class RightPolygon extends Shape {
         //计算宽高比
         float ratio = width*1f/height;
         //设置透视投影
-        Matrix.frustumM(mProjectMatrix, 0, -ratio, ratio, -1, 1, 3 , 7);
+        Matrix.frustumM(mProjectMatrix, 0, -ratio, ratio, -1, 1, 3, 20);
         //设置相机位置
-        Matrix.setLookAtM(mViewMatrix, 0, 0f, 0f, 7f, 0f, 0f, 0f,0f, 1.0f, 0f);
+        Matrix.setLookAtM(mViewMatrix, 0, 1.0f, -10.0f, -4.0f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         //计算变换矩阵
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectMatrix, 0, mViewMatrix, 0);
     }
@@ -110,11 +114,11 @@ public class RightPolygon extends Shape {
         GLES20.glVertexAttribPointer(mPositionHandle, COORDINATE_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 mVertexStride, mVertexBuffer);
-        //设置绘制三角形的颜色
-        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
         //绘制三角形
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, triangleCoordinates.length/3);
         //禁止顶点数组的句柄
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+        mOval.setMVPMatrix(mMVPMatrix);
+        mOval.drawFrame(gl);
     }
 }
