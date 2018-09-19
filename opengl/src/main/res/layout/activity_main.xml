@@ -38,4 +38,10 @@
         android:layout_height="wrap_content"
         android:text="正多边形" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="cubeClick"
+        android:layout_height="wrap_content"
+        android:text="正方体" />
+
 </LinearLayout>
