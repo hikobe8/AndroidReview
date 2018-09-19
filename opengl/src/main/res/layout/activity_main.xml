@@ -62,4 +62,10 @@
         android:layout_height="wrap_content"
         android:text="圆柱体" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="ballClick"
+        android:layout_height="wrap_content"
+        android:text="球体" />
+
 </LinearLayout>

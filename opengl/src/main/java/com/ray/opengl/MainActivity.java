@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ray.opengl.basics.SimpleGraphActivity;
+import com.ray.opengl.render.Ball;
 import com.ray.opengl.render.ColorfulTriangle;
 import com.ray.opengl.render.Cone;
 import com.ray.opengl.render.Cube;
@@ -57,5 +58,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void cylinderClick(View view) {
         SimpleGraphActivity.launch(this, Cylinder.class);
+    }
+
+    public void ballClick(View view) {
+        SimpleGraphActivity.launch(this, Ball.class);
     }
 }
