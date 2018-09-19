@@ -8,6 +8,7 @@ import com.ray.opengl.basics.SimpleGraphActivity;
 import com.ray.opengl.render.ColorfulTriangle;
 import com.ray.opengl.render.Cone;
 import com.ray.opengl.render.Cube;
+import com.ray.opengl.render.Cylinder;
 import com.ray.opengl.render.Oval;
 import com.ray.opengl.render.RightPolygon;
 import com.ray.opengl.render.SimpleIsoscelesRightTriangle;
@@ -52,5 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void coneClick(View view) {
         SimpleGraphActivity.launch(this, Cone.class);
+    }
+
+    public void cylinderClick(View view) {
+        SimpleGraphActivity.launch(this, Cylinder.class);
     }
 }

@@ -56,4 +56,10 @@
         android:layout_height="wrap_content"
         android:text="圆锥体" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="cylinderClick"
+        android:layout_height="wrap_content"
+        android:text="圆柱体" />
+
 </LinearLayout>
