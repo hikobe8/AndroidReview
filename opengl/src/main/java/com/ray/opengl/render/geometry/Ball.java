@@ -1,4 +1,4 @@
-package com.ray.opengl.render;
+package com.ray.opengl.render.geometry;
 
 import android.opengl.Matrix;
 
@@ -10,7 +10,6 @@ import javax.microedition.khronos.opengles.GL10;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_TRIANGLE_FAN;
-import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnable;

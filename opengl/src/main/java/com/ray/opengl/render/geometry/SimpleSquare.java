@@ -1,4 +1,4 @@
-package com.ray.opengl.render;
+package com.ray.opengl.render.geometry;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -11,14 +11,17 @@ import javax.microedition.khronos.opengles.GL10;
  *  Create at 2018-09-17 18:23
  *  description : 等腰直角三角形
  */
-public class SimpleIsoscelesRightTriangle extends Shape {
+public class SimpleSquare extends Shape {
 
     private static final int COORDINATE_PER_VERTEX = 3;
 
     private float triangleCoordinates[] = {
-            1f,  1f, 0.0f, // top
-            -1f, -1f, 0.0f, // bottom left
-            1f, -1f, 0.0f  // bottom right
+            0f, 0f, 0f,
+            -1f, 1f, 0.0f,
+            -1f, -1f, 0.0f,
+            1f,  -1f, 0.0f,
+            1f, 1f, 0.0f,
+            -1f, 1f, 0.0f
     };
 
     protected float color[] = { 1.0f, 1.0f, 1.0f, 1.0f }; //白色
@@ -29,7 +32,7 @@ public class SimpleIsoscelesRightTriangle extends Shape {
     private float[] mViewMatrix = new float[16];
     private float[] mMVPMatrix = new float[16];
     private int mMatrixHandler;
-    private int mVertexStride = 12;
+    private int mVertexStride = COORDINATE_PER_VERTEX * 4;
 
     @Override
     public float[] getCoordinatesArray() {
@@ -92,7 +95,7 @@ public class SimpleIsoscelesRightTriangle extends Shape {
         //设置绘制三角形的颜色
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
         //绘制三角形
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, triangleCoordinates.length/3);
         //禁止顶点数组的句柄
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }

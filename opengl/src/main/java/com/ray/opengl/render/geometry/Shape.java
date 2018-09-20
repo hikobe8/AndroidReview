@@ -1,4 +1,4 @@
-package com.ray.opengl.render;
+package com.ray.opengl.render.geometry;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
