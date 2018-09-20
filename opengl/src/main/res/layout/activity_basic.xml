@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BasicOptionActivity">
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="simpleTriangleClick"
+        android:layout_height="wrap_content"
+        android:text="简单三角形" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="simpleIsoscelesTriangleClick"
+        android:layout_height="wrap_content"
+        android:text="简单等腰直角三角形" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="colorfulTriangleClick"
+        android:layout_height="wrap_content"
+        android:text="彩色三角形" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="squareClick"
+        android:layout_height="wrap_content"
+        android:text="正方形" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="circleClick"
+        android:layout_height="wrap_content"
+        android:text="圆形" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="polygonClick"
+        android:layout_height="wrap_content"
+        android:text="正多边形" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="cubeClick"
+        android:layout_height="wrap_content"
+        android:text="正方体" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="coneClick"
+        android:layout_height="wrap_content"
+        android:text="圆锥体" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="cylinderClick"
+        android:layout_height="wrap_content"
+        android:text="圆柱体" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:onClick="ballClick"
+        android:layout_height="wrap_content"
+        android:text="球体" />
+
+</LinearLayout>
