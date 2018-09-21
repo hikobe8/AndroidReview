@@ -42,6 +42,11 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
     private int mGlHTexture;
     private int mGlHCoordinate;
     private int mGlHMatrix;
+    private int mGLVChangeType;
+    private int mGLVChangeColor;
+    private int mGLUxy;
+
+    private Filter mFilter = new Filter(0, new float[]{0f, 0f, 0f});
 
     private final float[] sPos = {
             -1.0f, 1.0f,    //左上角
@@ -57,6 +62,19 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
             1.0f, 0.0f,
             1.0f, 1.0f,
     };
+    private boolean mRefresh;
+    private GL10 mGl;
+    private EGLConfig mConfig;
+    private int mWidth;
+    private int mHeight;
+    private float mViewRatio;
+
+    public void setFilter(Filter filter) {
+       mFilter = filter;
+       if (filter.mType > 2) {
+           mRefresh = true;
+       }
+    }
 
     public SimpleTextureShader(Context context) {
         mContext = context;
@@ -72,6 +90,8 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        mGl = gl;
+        mConfig = config;
         //将背景设置为灰色
         glClearColor(0.5f,0.5f,0.5f,1.0f);
         GLES20.glEnable(GLES20.GL_TEXTURE_2D);
@@ -83,28 +103,33 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
         mGlHCoordinate= glGetAttribLocation(mProgram,"vCoordinate");
         mGlHTexture= glGetUniformLocation(mProgram,"vTexture");
         mGlHMatrix= glGetUniformLocation(mProgram,"vMatrix");
+        mGLVChangeType = glGetUniformLocation(mProgram, "vChangeType");
+        mGLVChangeColor = glGetUniformLocation(mProgram, "vChangeColor");
+        mGLUxy = glGetUniformLocation(mProgram, "uXY");
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        mWidth = width;
+        mHeight = height;
         glViewport(0, 0, width, height);
         //设置透视矩阵
         int bitmapWidth = mBitmap.getWidth();
         int bitmapHeight = mBitmap.getHeight();
         float imageRatio = bitmapWidth * 1f / bitmapHeight;
-        float viewRatio = width * 1f / height;
+        mViewRatio = width * 1f / height;
         if (width > height) {
             //横屏模式
-            if (imageRatio > viewRatio) {
-                Matrix.orthoM(mProjectMatrix, 0, -viewRatio * imageRatio, viewRatio * imageRatio, -1, 1, 3, 7);
+            if (imageRatio > mViewRatio) {
+                Matrix.orthoM(mProjectMatrix, 0, -mViewRatio * imageRatio, mViewRatio * imageRatio, -1, 1, 3, 7);
             } else {
-                Matrix.orthoM(mProjectMatrix, 0, -viewRatio / imageRatio, viewRatio / imageRatio, -1, 1, 3, 7);
+                Matrix.orthoM(mProjectMatrix, 0, -mViewRatio / imageRatio, mViewRatio / imageRatio, -1, 1, 3, 7);
             }
         } else {
-            if (imageRatio > viewRatio) {
-                Matrix.orthoM(mProjectMatrix, 0, -1, 1, -1 / viewRatio * imageRatio, 1 / viewRatio * imageRatio, 3, 7);
+            if (imageRatio > mViewRatio) {
+                Matrix.orthoM(mProjectMatrix, 0, -1, 1, -1 / mViewRatio * imageRatio, 1 / mViewRatio * imageRatio, 3, 7);
             } else {
-                Matrix.orthoM(mProjectMatrix, 0, -1, 1, -viewRatio / imageRatio, viewRatio / imageRatio, 3, 7);
+                Matrix.orthoM(mProjectMatrix, 0, -1, 1, -mViewRatio / imageRatio, mViewRatio / imageRatio, 3, 7);
             }
         }
         //设置相机位置
@@ -116,8 +141,16 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        if (mRefresh && mWidth != 0 && mHeight != 0) {
+            onSurfaceCreated(mGl, mConfig);
+            onSurfaceChanged(mGl, mWidth, mHeight);
+            mRefresh = false;
+        }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(mProgram);
+        glUniform1i(mGLVChangeType, mFilter.mType);
+        glUniform3fv(mGLVChangeColor, 1, mFilter.changeColor, 0);
+        glUniform1f(mGLUxy, mViewRatio);
         glUniformMatrix4fv(mGlHMatrix,1,false,mMVPMatrix,0);
         glEnableVertexAttribArray(mGlHPosition);
         glEnableVertexAttribArray(mGlHCoordinate);
