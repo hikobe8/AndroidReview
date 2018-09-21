@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.ray.opengl.render.geometry.SimpleTriangle;
 import com.ray.opengl.render.texture.SimpleTextureShader;
 
 public class TextureActivity extends AppCompatActivity {
@@ -22,5 +23,6 @@ public class TextureActivity extends AppCompatActivity {
         GLSurfaceView glSurfaceView = findViewById(R.id.surface);
         glSurfaceView.setEGLContextClientVersion(2);
         glSurfaceView.setRenderer(new SimpleTextureShader(this));
+        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 }

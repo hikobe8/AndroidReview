@@ -19,6 +19,7 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import static android.opengl.GLES20.*;
 import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
 
@@ -29,6 +30,7 @@ import static android.opengl.GLES20.glViewport;
  */
 public class SimpleTextureShader implements GLSurfaceView.Renderer {
 
+    private Context mContext;
     private int mProgram;
     private Bitmap mBitmap;
     private final float[] mProjectMatrix = new float[16];
@@ -57,16 +59,9 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
     };
 
     public SimpleTextureShader(Context context) {
+        mContext = context;
         mPosBuffer = createFloatBuffer(sPos);
         mCoordBuffer = createFloatBuffer(sCoord);
-        mProgram = ShaderHelper.getLinkedOpenGLESProgram(
-                ShaderHelper.loadShaderCode(context, "vShader/texture_vertex_shader.glsl"),
-                ShaderHelper.loadShaderCode(context, "fShader/texture_fragment_shader.glsl")
-        );
-        mGlHPosition=GLES20.glGetAttribLocation(mProgram,"vPosition");
-        mGlHCoordinate=GLES20.glGetAttribLocation(mProgram,"vCoordinate");
-        mGlHTexture=GLES20.glGetUniformLocation(mProgram,"vTexture");
-        mGlHMatrix=GLES20.glGetUniformLocation(mProgram,"vMatrix");
         try {
             InputStream inputStream = context.getAssets().open("texture/fengj.png");
             mBitmap = BitmapFactory.decodeStream(inputStream);
@@ -79,6 +74,15 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         //将背景设置为灰色
         glClearColor(0.5f,0.5f,0.5f,1.0f);
+        GLES20.glEnable(GLES20.GL_TEXTURE_2D);
+        mProgram = ShaderHelper.getLinkedOpenGLESProgram(
+                ShaderHelper.loadShaderCode(mContext, "vShader/texture_vertex_shader.glsl"),
+                ShaderHelper.loadShaderCode(mContext, "fShader/texture_fragment_shader.glsl")
+        );
+        mGlHPosition= glGetAttribLocation(mProgram,"vPosition");
+        mGlHCoordinate= glGetAttribLocation(mProgram,"vCoordinate");
+        mGlHTexture= glGetUniformLocation(mProgram,"vTexture");
+        mGlHMatrix= glGetUniformLocation(mProgram,"vMatrix");
     }
 
     @Override
@@ -112,18 +116,20 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        GLES20.glUseProgram(mProgram);
-        GLES20.glUniformMatrix4fv(mGlHMatrix,1,false,mMVPMatrix,0);
-        GLES20.glEnableVertexAttribArray(mGlHPosition);
-        GLES20.glEnableVertexAttribArray(mGlHCoordinate);
-        GLES20.glUniform1i(mGlHTexture, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glUseProgram(mProgram);
+        glUniformMatrix4fv(mGlHMatrix,1,false,mMVPMatrix,0);
+        glEnableVertexAttribArray(mGlHPosition);
+        glEnableVertexAttribArray(mGlHCoordinate);
+        glUniform1i(mGlHTexture, 0);
         int textureId = createTexture();
         //传入顶点坐标
-        GLES20.glVertexAttribPointer(mGlHPosition,2,GLES20.GL_FLOAT,false,0,mPosBuffer);
+        glVertexAttribPointer(mGlHPosition,2, GL_FLOAT,false,0,mPosBuffer);
         //传入纹理坐标
-        GLES20.glVertexAttribPointer(mGlHCoordinate,2,GLES20.GL_FLOAT,false,0,mCoordBuffer);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP,0,4);
+        glVertexAttribPointer(mGlHCoordinate,2, GL_FLOAT,false,0,mCoordBuffer);
+        glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+        glDisableVertexAttribArray(mGlHPosition);
+        glDisableVertexAttribArray(mGlHCoordinate);
     }
 
     private FloatBuffer createFloatBuffer(float[] arr) {
@@ -140,19 +146,19 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
         int[] texture = new int[1];
         if (mBitmap != null && !mBitmap.isRecycled()) {
             //生成纹理
-            GLES20.glGenTextures(1, texture, 0);
+            glGenTextures(1, texture, 0);
             //生成纹理
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
+            glBindTexture(GL_TEXTURE_2D, texture[0]);
             //设置缩小过滤为使用纹理中坐标最接近的一个像素的颜色作为需要绘制的像素颜色
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             //设置放大过滤为使用纹理中坐标最接近的若干个颜色，通过加权平均算法得到需要绘制的像素颜色
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             //设置环绕方向S，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             //设置环绕方向T，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             //根据以上指定的参数，生成一个2D纹理
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
+            GLUtils.texImage2D(GL_TEXTURE_2D, 0, mBitmap, 0);
             return texture[0];
         }
         return 0;

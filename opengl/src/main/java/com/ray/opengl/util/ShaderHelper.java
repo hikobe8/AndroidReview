@@ -7,7 +7,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
+import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
 import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glAttachShader;
 import static android.opengl.GLES20.glCompileShader;
@@ -70,7 +74,7 @@ public class ShaderHelper {
      */
     public static int getLinkedOpenGLESProgram(String vertexCode, String fragmentCode){
         int vertexShader = createShader(GL_VERTEX_SHADER, vertexCode);
-        int fragmentShader = createShader(GL_VERTEX_SHADER, fragmentCode);
+        int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentCode);
         int program = glCreateProgram();
         glAttachShader(program, vertexShader);
         glAttachShader(program, fragmentShader);
@@ -78,5 +82,14 @@ public class ShaderHelper {
         return program;
     }
 
+    public static FloatBuffer createFloatBuffer(float[] arr) {
+        FloatBuffer floatBuffer = ByteBuffer
+                .allocateDirect(arr.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer()
+                .put(arr);
+        floatBuffer.position(0);
+        return floatBuffer;
+    }
 
 }
