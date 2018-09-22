@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.ray.customizedview.path.PathActivity
 import com.ray.customizedview.shader.ShaderActivity
+import com.ray.customizedview.shadow.ShadowTextActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +20,10 @@ class MainActivity : AppCompatActivity() {
 
     fun clickShader(view: View){
         ShaderActivity.launchActivity(this)
+    }
+
+    fun clickShadowText(view: View){
+        ShadowTextActivity.launchActivty(this)
     }
 
 }
