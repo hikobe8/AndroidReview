@@ -1,14 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<android.support.v7.widget.LinearLayoutCompat
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     tools:context=".shadow.ShadowTextActivity">
 
     <com.ray.customizedview.shadow.ShadowText
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        app:text = "Hello Coder"
+        app:shadowColor="#123456"
+        app:textSize="32sp"
+        app:shadowRadius="24"
+        app:shadowOffsetX="10"
+        app:shadowOffsetY="10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
-</android.support.constraint.ConstraintLayout>
+    <com.ray.customizedview.shadow.ShadowText
+        android:layout_marginTop="20dp"
+        android:paddingTop="48dp"
+        app:text = "你好 码农"
+        app:shadowColor="#a6041b"
+        app:textSize="48sp"
+        app:shadowRadius="10"
+        app:shadowOffsetY="10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+    <com.ray.customizedview.shadow.ShadowText
+        android:layout_marginTop="20dp"
+        android:paddingTop="48dp"
+        app:text = "阴影的中文"
+        app:textColor="@color/colorAccent"
+        app:shadowColor="#000000"
+        app:textSize="24sp"
+        app:shadowRadius="5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</android.support.v7.widget.LinearLayoutCompat>

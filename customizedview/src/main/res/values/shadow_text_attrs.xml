@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ShadowText">
+        <attr name="text" format="string"/>
+        <attr name="shadowColor" format="color"/>
+        <attr name="textColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="shadowRadius" format="float"/>
+        <attr name="shadowOffsetX" format="float"/>
+        <attr name="shadowOffsetY" format="float"/>
+    </declare-styleable>
+
+</resources>
