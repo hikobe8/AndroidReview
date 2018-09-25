@@ -1,6 +1,7 @@
 package com.ray.opengl.util;
 
 import android.content.Context;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -25,7 +26,7 @@ import static android.opengl.GLES20.glShaderSource;
  *  Create at 2018-09-20 14:31
  *  description : 加载shader
  */
-public class ShaderHelper {
+public class MyGLUtil {
 
     private static final String TAG = "ShaderHelper";
 
@@ -90,6 +91,35 @@ public class ShaderHelper {
                 .put(arr);
         floatBuffer.position(0);
         return floatBuffer;
+    }
+
+    public static void getShowMatrix(float[] showMat, int imgWidth, int imgHeight, int viewWidth, int viewHeight){
+        if (showMat != null && imgWidth > 0
+                && imgHeight > 0 && viewWidth > 0 && viewHeight > 0) {
+            float imageRatio = imgWidth * 1f / imgHeight;
+            float viewRatio = viewWidth * 1f / viewHeight;
+            float[] projection=new float[16];
+            float[] camera=new float[16];
+            if (imageRatio > viewRatio) {
+                Matrix.orthoM(projection, 0, -viewRatio/imageRatio, viewRatio/imageRatio, -1, 1, 1, 3);
+            } else {
+                Matrix.orthoM(projection, 0, -1, 1, -imageRatio/viewRatio, imageRatio/viewRatio, 1, 3);
+            }
+            Matrix.setLookAtM(camera, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f);
+            Matrix.multiplyMM(showMat, 0, projection,0, camera, 0);
+        }
+    }
+
+    public static float[] rotate(float[] m,float angle){
+        Matrix.rotateM(m,0,angle,0,0,1);
+        return m;
+    }
+
+    public static float[] flip(float[] m,boolean x,boolean y){
+        if(x||y){
+            Matrix.scaleM(m,0,x?-1:1,y?-1:1,1);
+        }
+        return m;
     }
 
 }

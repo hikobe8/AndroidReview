@@ -8,7 +8,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
-import com.ray.opengl.util.ShaderHelper;
+import com.ray.opengl.util.MyGLUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,9 +95,9 @@ public class SimpleTextureShader implements GLSurfaceView.Renderer {
         //将背景设置为灰色
         glClearColor(0.5f,0.5f,0.5f,1.0f);
         GLES20.glEnable(GLES20.GL_TEXTURE_2D);
-        mProgram = ShaderHelper.getLinkedOpenGLESProgram(
-                ShaderHelper.loadShaderCode(mContext, "vShader/texture_vertex_shader.glsl"),
-                ShaderHelper.loadShaderCode(mContext, "fShader/texture_fragment_shader.glsl")
+        mProgram = MyGLUtil.getLinkedOpenGLESProgram(
+                MyGLUtil.loadShaderCode(mContext, "vShader/texture_vertex_shader.glsl"),
+                MyGLUtil.loadShaderCode(mContext, "fShader/texture_fragment_shader.glsl")
         );
         mGlHPosition= glGetAttribLocation(mProgram,"vPosition");
         mGlHCoordinate= glGetAttribLocation(mProgram,"vCoordinate");

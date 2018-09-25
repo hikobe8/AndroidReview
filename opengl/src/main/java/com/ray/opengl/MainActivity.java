@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ray.opengl.basics.SimpleGraphActivity;
+import com.ray.opengl.camera.CameraPreviewActivity;
 import com.ray.opengl.render.texture.SimpleTextureShader;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,5 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void textureClick(View view) {
         TextureActivity.launch(this);
+    }
+
+    public void cameraCLick(View view) {
+        CameraPreviewActivity.launch(this);
     }
 }
