@@ -25,4 +25,10 @@
         android:onClick="cameraCLick"
         android:text="相机预览"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="fboCLick"
+        android:text="FBO离屏渲染"/>
+
 </LinearLayout>

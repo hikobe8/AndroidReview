@@ -122,4 +122,13 @@ public class MyGLUtil {
         return m;
     }
 
+    public static float[] getOriginalMatrix(){
+        return new float[]{
+                1,0,0,0,
+                0,1,0,0,
+                0,0,1,0,
+                0,0,0,1
+        };
+    }
+
 }
