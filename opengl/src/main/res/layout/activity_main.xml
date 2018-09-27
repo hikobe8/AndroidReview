@@ -31,4 +31,10 @@
         android:onClick="fboCLick"
         android:text="FBO离屏渲染"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="eglCLick"
+        android:text="EGL后台处理图片"/>
+
 </LinearLayout>
