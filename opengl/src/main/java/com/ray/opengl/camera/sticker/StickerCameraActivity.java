@@ -1,6 +1,8 @@
 package com.ray.opengl.camera.sticker;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -22,6 +24,11 @@ public class StickerCameraActivity extends AppCompatActivity {
     private Renderer mRenderer;
     private int cameraId = 1;
     private TextureController mController;
+
+    public static void launch(Context context){
+        Intent intent = new Intent(context, StickerCameraActivity.class);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +67,11 @@ public class StickerCameraActivity extends AppCompatActivity {
     }
 
     private void setContent() {
+        mRenderer = new Camera1Renderer();
         setContentView(R.layout.activity_sticker_camera);
         mSurfaceView = findViewById(R.id.mSurface);
+        mController = new TextureController(this);
+        // TODO: 2018/9/28  添加水印filter
         mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {

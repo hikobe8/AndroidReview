@@ -3,13 +3,19 @@ package com.ray.opengl.camera.sticker;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.view.SurfaceHolder;
+import android.os.Build;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.ray.opengl.camera.TextureFilter;
 import com.ray.opengl.filter.AFilter;
 import com.ray.opengl.filter.NoFilter;
+import com.ray.opengl.util.EasyGlUtils;
+import com.ray.opengl.util.MatrixUtils;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -37,6 +43,21 @@ public class TextureController implements GLSurfaceView.Renderer {
     //输出视图的大小
     private Point mWindowSize;
 
+    private AtomicBoolean isParamSet = new AtomicBoolean(false);
+
+    //创建离屏幕buffer,用于最后导出数据
+    private int[] mExportFrame = new int[1];
+    private int[] mExportTexture = new int[1];
+    //绘制到屏幕上的变换矩阵
+    private float[] mShowMatrix = new float[16];
+    //绘制回调缩放的矩阵
+    private float[] mCallbackMatrix = new float[16];
+    //回调数据的宽高
+    private int frameCallbackWidth, frameCallbackHeight;
+    private int mDirectionFlag = -1;
+    //输出到屏幕的缩放类型
+    private int mShowType = MatrixUtils.TYPE_CENTERCROP;
+
     public TextureController(Context context) {
         mContext = context;
         init();
@@ -51,27 +72,95 @@ public class TextureController implements GLSurfaceView.Renderer {
 
             }
         }.addView(mGLView);
+        mEffectFilter = new TextureFilter(mContext.getResources());
         mShowFilter = new NoFilter(mContext.getResources());
-        mGLView.attachedToWindow();
+        //设置默认的DataSize
+        mDataSize = new Point(720, 1280);
+        mWindowSize = new Point(720, 1280);
+
+        mGLView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        mGLView.attachedToWindow();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            mGLView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        } else {
+                            mGLView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
+                    }
+                });
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        mEffectFilter.create();
         mShowFilter.create();
+        if (isParamSet.get()) {
+            if (mRenderer != null) {
+                mRenderer.onSurfaceCreated(gl, config);
+            }
+            setParamSet();
+        }
+        calculateCallbackOM();
+        mEffectFilter.setFlag(mDirectionFlag);
+
+        deleteFrameBuffer();
+        GLES20.glGenFramebuffers(1, mExportFrame, 0);
+        EasyGlUtils.genTexturesWithParameter(1, mExportTexture, 0, GLES20.GL_RGBA, mDataSize.x, mDataSize.y);
+    }
+
+    private void deleteFrameBuffer() {
+        GLES20.glDeleteFramebuffers(1, mExportFrame, 0);
+        GLES20.glDeleteTextures(1, mExportFrame, 0);
+    }
+
+    private void calculateCallbackOM() {
+        if (frameCallbackHeight > 0 && frameCallbackWidth > 0 && mDataSize.x > 0 && mDataSize.y > 0) {
+            //计算输出的变换矩阵
+            MatrixUtils.getMatrix(mCallbackMatrix, MatrixUtils.TYPE_CENTERCROP, mDataSize.x, mDataSize.y,
+                    frameCallbackWidth,
+                    frameCallbackHeight);
+            MatrixUtils.flip(mCallbackMatrix, false, true);
+        }
+    }
+
+    private void setParamSet() {
+        if (!isParamSet.get() && mDataSize.x > 0 && mDataSize.y > 0) {
+            isParamSet.set(true );
+        }
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-
+        MatrixUtils.getMatrix(mShowMatrix, mShowType, mDataSize.x, mDataSize.y,
+                width, height);
+        mShowFilter.setSize(width, height);
+        mShowFilter.setMatrix(mShowMatrix);
+        mEffectFilter.setSize(mDataSize.x, mDataSize.y);
+        mShowFilter.setSize(mDataSize.x, mDataSize.y);
+        if (mRenderer != null) {
+            mRenderer.onSurfaceChanged(gl, width, height);
+        }
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
-
+        if (isParamSet.get()) {
+            mEffectFilter.draw();
+            //显示传入的texture上，一般为显示在屏幕上
+            GLES20.glViewport(0, 0,mWindowSize.x, mWindowSize.y);
+            mShowFilter.setMatrix(mShowMatrix);
+            mShowFilter.setTextureId(mEffectFilter.getOutputTexture());
+            mShowFilter.draw();
+            if (mRenderer != null) {
+                mRenderer.onDrawFrame(gl);
+            }
+        }
     }
 
-    public void setImageDirection(int cameraId) {
-
+    public void setImageDirection(int flag) {
+        mDirectionFlag = flag;
     }
 
     public void setDataSize(int width, int height) {
@@ -133,7 +222,7 @@ public class TextureController implements GLSurfaceView.Renderer {
 
         private void init() {
             getHolder().addCallback(null);
-            setEGLWindowSurfaceFactory(new GLSurfaceView.EGLWindowSurfaceFactory(){
+            setEGLWindowSurfaceFactory(new GLSurfaceView.EGLWindowSurfaceFactory() {
 
                 @Override
                 public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig config, Object nativeWindow) {
@@ -155,7 +244,7 @@ public class TextureController implements GLSurfaceView.Renderer {
             super.onAttachedToWindow();
         }
 
-        public void detachedFromWindow(){
+        public void detachedFromWindow() {
             super.onDetachedFromWindow();
         }
 

@@ -37,4 +37,10 @@
         android:onClick="eglCLick"
         android:text="EGL后台处理图片"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="stickerClick"
+        android:text="相机贴纸"/>
+
 </LinearLayout>
