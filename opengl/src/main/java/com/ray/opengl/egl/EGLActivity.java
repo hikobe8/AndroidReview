@@ -53,7 +53,8 @@ public class EGLActivity extends AppCompatActivity {
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(filePathColumns[0]);
                 String imgPath = cursor.getString(columnIndex);
-                Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+//                Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
                 int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
                 mBackEnv = new GLES20BackEnv(width, height);

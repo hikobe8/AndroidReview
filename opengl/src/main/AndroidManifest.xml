@@ -33,7 +33,8 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity android:name=".fbo.FBOActivity" />
-        <activity android:name=".egl.EGLActivity"></activity>
+        <activity android:name=".egl.EGLActivity" />
+        <activity android:name=".camera.sticker.StickerCameraActivity"></activity>
     </application>
 
 </manifest>
