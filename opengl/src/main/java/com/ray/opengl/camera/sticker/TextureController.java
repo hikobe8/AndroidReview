@@ -1,6 +1,7 @@
 package com.ray.opengl.camera.sticker;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
@@ -56,7 +57,7 @@ public class TextureController implements GLSurfaceView.Renderer {
     //绘制回调缩放的矩阵
     private float[] mCallbackMatrix = new float[16];
     //回调数据的宽高
-    private int frameCallbackWidth, frameCallbackHeight;
+    private int mFrameCallbackWidth, mFrameCallbackHeight;
     private int mDirectionFlag = -1;
     //输出到屏幕的缩放类型
     private int mShowType = MatrixUtils.TYPE_CENTERCROP;
@@ -91,7 +92,6 @@ public class TextureController implements GLSurfaceView.Renderer {
         //设置默认的DataSize
         mDataSize = new Point(720, 1280);
         mWindowSize = new Point(720, 1280);
-
         mGLView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -131,11 +131,11 @@ public class TextureController implements GLSurfaceView.Renderer {
     }
 
     private void calculateCallbackOM() {
-        if (frameCallbackHeight > 0 && frameCallbackWidth > 0 && mDataSize.x > 0 && mDataSize.y > 0) {
+        if (mFrameCallbackHeight > 0 && mFrameCallbackWidth > 0 && mDataSize.x > 0 && mDataSize.y > 0) {
             //计算输出的变换矩阵
             MatrixUtils.getMatrix(mCallbackMatrix, MatrixUtils.TYPE_CENTERCROP, mDataSize.x, mDataSize.y,
-                    frameCallbackWidth,
-                    frameCallbackHeight);
+                    mFrameCallbackWidth,
+                    mFrameCallbackHeight);
             MatrixUtils.flip(mCallbackMatrix, false, true);
         }
     }
@@ -178,8 +178,41 @@ public class TextureController implements GLSurfaceView.Renderer {
         callbackFrameIfNeed();
     }
 
-    private void callbackFrameIfNeed() {
+    public void setFrameCallback(int width, int height, FrameCallback frameCallback) {
+        mFrameCallbackWidth = width;
+        mFrameCallbackHeight = height;
+        if (mFrameCallbackWidth > 0 && mFrameCallbackHeight > 0) {
+            if (mOutputBuffer != null) {
+                mOutputBuffer = new ByteBuffer[3];
+            }
+            mFrameCallback = frameCallback;
+        } else {
+            mFrameCallback = null;
+        }
+    }
 
+    //缩放图片到制定大小，读取数据并回调给调用端
+    private void callbackFrameIfNeed() {
+        if (mFrameCallback != null && (mIsRecord || mIsShoot)) {
+            mIndexOutput = mIndexOutput ++ >= 2 ? 0 : mIndexOutput;
+            if (mOutputBuffer[mIndexOutput] == null) {
+                mOutputBuffer[mIndexOutput] = ByteBuffer.allocate(mFrameCallbackWidth * mFrameCallbackHeight * 4);
+            }
+            GLES20.glViewport(0,0, mFrameCallbackWidth, mFrameCallbackHeight);
+            EasyGlUtils.bindFrameTexture(mExportFrame[0], mExportTexture[0]);
+            mShowFilter.setMatrix(mCallbackMatrix);
+            mShowFilter.draw();
+            frameCallback();
+            mIsShoot = false;
+            EasyGlUtils.unBindFrameBuffer();
+            mShowFilter.setMatrix(mShowMatrix);
+        }
+    }
+
+    private void frameCallback() {
+        GLES20.glReadPixels(0, 0, mFrameCallbackWidth, mFrameCallbackHeight, GLES20.GL_RGBA,
+                GLES20.GL_UNSIGNED_BYTE, mOutputBuffer[mIndexOutput]);
+        mFrameCallback.onFrame(mOutputBuffer[mIndexOutput].array(), 0);
     }
 
     public void addFilter(AFilter filter) {

@@ -1,1 +1,1 @@
-include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo', ':customizedview', ':opengl'
+include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo', ':customizedview', ':opengl', ":stmobile"

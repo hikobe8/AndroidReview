@@ -8,6 +8,11 @@
         <SurfaceView android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/mSurface" />
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#f5f5f5"/>
     </FrameLayout>
     <!--<ImageButton-->
         <!--android:layout_width="70dp"-->
