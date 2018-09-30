@@ -33,7 +33,7 @@ public class Oval extends Shape {
         createPolygonCoordinates();
     }
 
-    Oval(){
+    public Oval(){
 
     }
 
