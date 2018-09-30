@@ -1,14 +1,11 @@
 package com.ray.opengl.camera.sticker;
 
 import android.Manifest;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.ImageFormat;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
@@ -36,14 +33,11 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
 import com.ray.opengl.R;
-import com.ray.opengl.filter.GrayFilter;
 import com.ray.opengl.util.Accelerometer;
-import com.sensetime.stmobileapi.STMobile106;
 import com.sensetime.stmobileapi.STMobileFaceAction;
 import com.sensetime.stmobileapi.STMobileMultiTrack106;
 import com.sensetime.stmobileapi.STUtils;
@@ -67,7 +61,7 @@ public class StickerCameraActivity extends AppCompatActivity {
     private TextureController mController;
     private TextView mTvInfo;
     private Accelerometer mAccelerometer;
-    private WaterMarkFilter filter;
+    private StickerFilter filter;
     private static final int MAX_TRACK_WIDTH = 640;
     private static final int MAX_TRACK_HEIGHT = 480;
 
@@ -250,7 +244,7 @@ public class StickerCameraActivity extends AppCompatActivity {
         mTvInfo = findViewById(R.id.tv);
         mController = new TextureController(this);
 //        mController.addFilter(new GrayFilter(getResources()));
-        filter = new WaterMarkFilter(getResources());
+        filter = new StickerFilter(getResources());
         filter.setWaterMark(BitmapFactory.decodeResource(getResources(),R.drawable.ic_sticker_mouth10));
         mController.addFilter(filter);
 //        StickerFilter filter2=new StickerFilter(getResources());

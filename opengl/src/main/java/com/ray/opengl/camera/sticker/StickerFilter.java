@@ -19,7 +19,7 @@ import com.ray.opengl.util.MatrixUtils;
 /**
  * 水印Filter示例
  */
-public class WaterMarkFilter extends NoFilter {
+public class StickerFilter extends NoFilter {
 
     private Bitmap mBitmap;
     private NoFilter mFilter;
@@ -27,7 +27,7 @@ public class WaterMarkFilter extends NoFilter {
 
     private int x,y,w,h;
 
-    public WaterMarkFilter(Resources mRes) {
+    public StickerFilter(Resources mRes) {
         super(mRes);
         mFilter=new NoFilter(mRes){
             @Override
