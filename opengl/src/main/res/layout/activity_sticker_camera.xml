@@ -13,6 +13,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="#f5f5f5"/>
+
+        <com.ray.opengl.camera.sticker.FaceRectView
+            android:id="@+id/face"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </FrameLayout>
     <!--<ImageButton-->
         <!--android:layout_width="70dp"-->

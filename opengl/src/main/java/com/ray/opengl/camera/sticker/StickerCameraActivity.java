@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
@@ -36,6 +37,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.ray.opengl.R;
@@ -66,8 +68,8 @@ public class StickerCameraActivity extends AppCompatActivity {
     private TextView mTvInfo;
     private Accelerometer mAccelerometer;
     private WaterMarkFilter filter;
-    private static int mDeviceWidth;
-    private static int mDeviceHeight;
+    private static final int MAX_TRACK_WIDTH = 640;
+    private static final int MAX_TRACK_HEIGHT = 480;
 
     public static void launch(Context context){
         Intent intent = new Intent(context, StickerCameraActivity.class);
@@ -83,8 +85,7 @@ public class StickerCameraActivity extends AppCompatActivity {
                 return;
             }
         }
-        mDeviceWidth = getResources().getDisplayMetrics().widthPixels;
-        mDeviceHeight = getResources().getDisplayMetrics().heightPixels;
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContent();
     }
 
@@ -134,21 +135,22 @@ public class StickerCameraActivity extends AppCompatActivity {
                     points[i] = STUtils.RotateDeg90(points[i], previewWidth, previewHeight);
                 }
 
-                landmarkX[i] = 1 - points[i].x / 480.0f;
-                landmarkY[i] = points[i].y / 640.0f;
+                landmarkX[i] = 1 - points[i].x / MAX_TRACK_HEIGHT;
+                landmarkY[i] = points[i].y / MAX_TRACK_WIDTH;
             }
-
-            onGetFaceLandmark(landmarkX, landmarkY, mouthAh);
+            Rect rect;
+            if (rotate270) {
+                rect = STUtils.RotateDeg270(faceAction.getFace().getRect(), previewWidth, previewHeight);
+            } else {
+                rect = STUtils.RotateDeg90(faceAction.getFace().getRect(), previewWidth, previewHeight);
+            }
+            onGetFaceLandmark(landmarkX, landmarkY, rect);
         }
     }
 
     private List<PointF> mDynamicPoints = new ArrayList<>();
 
-    private void onGetFaceLandmark(final float[] landmarkX, final float[] landmarkY, int mouthAh) {
-        float[] copyLandmarkX = new float[landmarkX.length];
-        float[] copyLandmarkY = new float[landmarkY.length];
-        System.arraycopy(landmarkX, 0, copyLandmarkX, 0, landmarkX.length);
-        System.arraycopy(landmarkY, 0, copyLandmarkY, 0, landmarkY.length);
+    private void onGetFaceLandmark(final float[] landmarkX, final float[] landmarkY, Rect rect) {
         mDynamicPoints.clear();
 
 //        int length = landmarkX.length;
@@ -210,17 +212,14 @@ public class StickerCameraActivity extends AppCompatActivity {
 //        mDynamicPoints.add(new PointF( landmarkX[101], landmarkY[101]));
 //        mDynamicPoints.add(new PointF( landmarkX[93], landmarkY[93]));
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (filter != null) {
-//                                    filter.setPosition((int)points[44].x/480*mDeviceWidth, (int) points[44].y/640*mDeviceHeight, 150, 150);
-//                    filter.setPosition((int)mDynamicPoints.get(0).x*720, (int) mDynamicPoints.get(0).y*1280, 150, 150);
-//                    filter.setPosition((int)mDynamicPoints.get(0).x*720, (int)mDynamicPoints.get(0).x*720, 150, 150);
-                    filter.setPosition((int) (mDeviceWidth *mDynamicPoints.get(0).x - 200), (int) (mDeviceHeight *mDynamicPoints.get(0).y - 500), 400, 400);
-                }
+        if (filter != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                rect.left = (int) (1f*((Camera2Renderer)mRenderer).mPreviewSize.getHeight() * rect.left / MAX_TRACK_HEIGHT);
+                rect.right = (int) (1f*((Camera2Renderer)mRenderer).mPreviewSize.getHeight() * rect.right / MAX_TRACK_HEIGHT);
+                int bmpWidth = rect.width();
+                filter.setPosition((int) ((int) (((Camera2Renderer)mRenderer).mPreviewSize.getHeight()*mDynamicPoints.get(0).x) - bmpWidth/2f), (int) ((int) (((Camera2Renderer)mRenderer).mPreviewSize.getWidth()*mDynamicPoints.get(0).y) - bmpWidth/2f), bmpWidth, bmpWidth);
             }
-        });
+        }
     }
 
     private void setContent() {
@@ -231,10 +230,7 @@ public class StickerCameraActivity extends AppCompatActivity {
             ((Camera2Renderer)mRenderer).setTrackCallBackListener(new TrackCallBackListener() {
                 @Override
                 public void onTrackDetected(final STMobileFaceAction[] faceActions, int orientation, final int value, final float pitch, final float roll, final float yaw, final int eye_dist, final int id, final int eyeBlink, final int mouthAh, final int headYaw, final int headPitch, final int browJump) {
-                    Log.e("fuck", "TRACK: " + value + " MS"
-                            + "\nPITCH: " + pitch + "\nROLL: " + roll + "\nYAW: " + yaw + "\nEYE_DIST:" + eye_dist);
-                    STMobile106 face = faceActions[0].getFace();
-                    handleFaceLandmark(faceActions, orientation, mouthAh, 640, 480);
+                    handleFaceLandmark(faceActions, orientation, mouthAh, MAX_TRACK_WIDTH, MAX_TRACK_HEIGHT);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -244,9 +240,6 @@ public class StickerCameraActivity extends AppCompatActivity {
                                     + mouthAh + "\nHEAD_YAW:" + headYaw + "\nHEAD_PITCH:" + headPitch + "\nBROW_JUMP:" + browJump);
                         }
                     });
-
-                    Log.e("fuck", "ID:" + id + "\nEYE_BLINK:" + eyeBlink + "\nMOUTH_AH:"
-                            + mouthAh + "\nHEAD_YAW:" + headYaw + "\nHEAD_PITCH:" + headPitch + "\nBROW_JUMP:" + browJump);
                 }
             });
         } else {
@@ -259,17 +252,6 @@ public class StickerCameraActivity extends AppCompatActivity {
 //        mController.addFilter(new GrayFilter(getResources()));
         filter = new WaterMarkFilter(getResources());
         filter.setWaterMark(BitmapFactory.decodeResource(getResources(),R.drawable.ic_sticker_mouth10));
-        ValueAnimator animator = ValueAnimator.ofInt(0, 500);
-        animator.setDuration(2000);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                filter.setPosition((Integer) animation.getAnimatedValue() + 75, (Integer) animation.getAnimatedValue(),150,180);
-            }
-        });
-//        animator.start();
         mController.addFilter(filter);
 //        StickerFilter filter2=new StickerFilter(getResources());
 //        filter2.setSticker(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher));
@@ -357,8 +339,6 @@ public class StickerCameraActivity extends AppCompatActivity {
     private class Camera2Renderer implements Renderer {
 
         private static final String TAG = "Camera2Renderer";
-        private static final int PREVIEW_WIDTH = 640;
-        private static final int PREVIEW_HEIGHT = 480;
         CameraDevice mDevice;
         CameraManager mCameraManager;
         private HandlerThread mThread;
@@ -381,7 +361,7 @@ public class StickerCameraActivity extends AppCompatActivity {
             mInferenceThread = new HandlerThread("InferenceThread");
             mInferenceThread.start();
             mInferenceHandler = new Handler(mInferenceThread.getLooper());
-            nv21 = new byte[PREVIEW_WIDTH * PREVIEW_HEIGHT * 2];
+            nv21 = new byte[MAX_TRACK_WIDTH * MAX_TRACK_HEIGHT * 2];
             tracker = new STMobileMultiTrack106(StickerCameraActivity.this, ST_MOBILE_TRACKING_ENABLE_FACE_ACTION);
             int max = 1;
             tracker.setMaxDetectableFaces(max);
@@ -424,7 +404,7 @@ public class StickerCameraActivity extends AppCompatActivity {
                                 direction = (direction ^ 2);
                             }
 
-                            STMobileFaceAction[] faceActions = tracker.trackFaceAction(nv21, direction, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+                            STMobileFaceAction[] faceActions = tracker.trackFaceAction(nv21, direction, MAX_TRACK_WIDTH, MAX_TRACK_HEIGHT);
 
                             long endTime = System.currentTimeMillis();
                             float trackTime = endTime - startTime;
@@ -492,7 +472,7 @@ public class StickerCameraActivity extends AppCompatActivity {
                 //自定义规则，选个大小
                 mPreviewSize=sizes[0];
                 mController.setDataSize(mPreviewSize.getHeight(),mPreviewSize.getWidth());
-                imageReader = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, 2);
+                imageReader = ImageReader.newInstance(MAX_TRACK_WIDTH, MAX_TRACK_HEIGHT, ImageFormat.YUV_420_888, 2);
                 imageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
                     @Override
                     public void onImageAvailable(ImageReader reader) {
