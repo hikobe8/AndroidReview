@@ -13,12 +13,12 @@ import android.view.MenuItem;
 
 import com.ray.opengl.R;
 
-public class CameraPreviewActivity extends AppCompatActivity {
+public class CameraPreviewWithGLActivity extends AppCompatActivity {
 
     private CameraView mCameraView;
 
     public static void launch(Context context) {
-        Intent intent = new Intent(context, CameraPreviewActivity.class);
+        Intent intent = new Intent(context, CameraPreviewWithGLActivity.class);
         context.startActivity(intent);
     }
 

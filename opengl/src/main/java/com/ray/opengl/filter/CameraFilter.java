@@ -15,8 +15,6 @@ import android.hardware.Camera;
  */
 public class CameraFilter extends OesFilter {
 
-
-
     public CameraFilter(Resources mRes) {
         super(mRes);
     }

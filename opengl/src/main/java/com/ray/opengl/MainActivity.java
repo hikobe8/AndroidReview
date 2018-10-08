@@ -1,15 +1,13 @@
 package com.ray.opengl;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.ray.opengl.basics.SimpleGraphActivity;
-import com.ray.opengl.camera.CameraPreviewActivity;
+import com.ray.camera.CameraOptionActivity;
 import com.ray.opengl.camera.sticker.StickerCameraActivity;
 import com.ray.opengl.egl.EGLActivity;
 import com.ray.opengl.fbo.FBOActivity;
-import com.ray.opengl.render.texture.SimpleTextureShader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,15 +25,15 @@ public class MainActivity extends AppCompatActivity {
         TextureActivity.launch(this);
     }
 
-    public void cameraCLick(View view) {
-        CameraPreviewActivity.launch(this);
+    public void cameraClick(View view) {
+        CameraOptionActivity.launch(this);
     }
 
-    public void fboCLick(View view) {
+    public void fboClick(View view) {
         FBOActivity.launch(this);
     }
 
-    public void eglCLick(View view) {
+    public void eglClick(View view) {
         EGLActivity.launch(this);
     }
 

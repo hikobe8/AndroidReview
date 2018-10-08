@@ -22,19 +22,19 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="cameraCLick"
+        android:onClick="cameraClick"
         android:text="相机预览"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="fboCLick"
+        android:onClick="fboClick"
         android:text="FBO离屏渲染"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="eglCLick"
+        android:onClick="eglClick"
         android:text="EGL后台处理图片"/>
 
     <Button
