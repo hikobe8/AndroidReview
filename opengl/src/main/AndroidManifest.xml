@@ -37,7 +37,8 @@
         <activity
             android:name=".camera.sticker.StickerCameraActivity"
             android:theme="@style/FullScreen" />
-        <activity android:name="com.ray.camera.CameraOptionActivity"></activity>
+        <activity android:name="com.ray.camera.CameraOptionActivity" />
+        <activity android:name="com.ray.camera.SimpleCameraActivity"></activity>
     </application>
 
 </manifest>

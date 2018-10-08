@@ -27,6 +27,6 @@ public class CameraOptionActivity extends AppCompatActivity {
     }
 
     public void cameraClick(View view) {
-
+        SimpleCameraActivity.launch(this);
     }
 }
