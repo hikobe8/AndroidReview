@@ -5,15 +5,13 @@
  * Created by Wuwang on 2016/12/21
  * Copyright © 2016年 深圳哎吖科技. All rights reserved.
  */
-package com.ray.opengl.camera;
+package com.ray.opengl.filter;
 
 import android.content.res.Resources;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.util.Log;
 
-import com.ray.opengl.filter.AFilter;
-import com.ray.opengl.filter.CameraFilter;
 import com.ray.opengl.util.EasyGlUtils;
 
 import java.nio.ByteBuffer;

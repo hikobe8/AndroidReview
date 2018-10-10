@@ -13,10 +13,10 @@ import android.opengl.GLES20;
 import com.ray.opengl.filter.AFilter;
 import com.ray.opengl.util.MatrixUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -31,7 +31,7 @@ public class GroupFilter extends AFilter {
 
     public GroupFilter(Resources res) {
         super(res);
-        mFilters=new ArrayList<>();
+        mFilters=new CopyOnWriteArrayList<>();
         mFilterQueue=new ConcurrentLinkedQueue<>();
     }
 

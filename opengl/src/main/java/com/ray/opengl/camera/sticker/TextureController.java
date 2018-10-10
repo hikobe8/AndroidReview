@@ -1,7 +1,6 @@
 package com.ray.opengl.camera.sticker;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
@@ -10,7 +9,7 @@ import android.os.Build;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import com.ray.opengl.camera.TextureFilter;
+import com.ray.opengl.filter.TextureFilter;
 import com.ray.opengl.filter.AFilter;
 import com.ray.opengl.filter.NoFilter;
 import com.ray.opengl.util.EasyGlUtils;
