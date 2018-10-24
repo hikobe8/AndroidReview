@@ -84,8 +84,15 @@ public class TriangleRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
-        Matrix.perspectiveM(mMvpMatrix, 0, 45, width*1f/height, 0.1f, 100f);
+        float ratio = width*1f/height;
+        if (width > height) {
+            Matrix.orthoM(mMvpMatrix, 0, -ratio, ratio, -1, 1, 3f, 7f);
+        } else {
+            Matrix.orthoM(mMvpMatrix, 0, -1, 1, -1/ratio, 1/ratio, 3f, 7f);
+        }
+//        Matrix.perspectiveM(mMvpMatrix, 0, 45, width*1f/height, 0.1f, 100f);
         Matrix.translateM(mMvpMatrix, 0, 0f, 0f, -3.5f);
+
     }
 
     @Override
