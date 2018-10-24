@@ -1,8 +1,10 @@
 package com.ray.reopengles;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import com.ray.reopengles.simplegraph.GraphOptionActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,6 +16,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickSimpleGraph(View view) {
-        SimpleGraphActivity.launch(this);
+        GraphOptionActivity.launch(this);
     }
 }

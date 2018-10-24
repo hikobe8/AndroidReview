@@ -16,8 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SimpleGraphActivity"
-            android:theme="@style/AppThemeNoActionBar"/>
+        <activity
+            android:name=".simplegraph.SimpleGraphActivity"
+            android:theme="@style/AppThemeNoActionBar" />
+        <activity android:name=".simplegraph.GraphOptionActivity"></activity>
     </application>
 
 </manifest>
