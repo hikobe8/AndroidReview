@@ -14,11 +14,10 @@ public class Square extends Shape {
     @Override
     protected void initVertexBuffer() {
         createVertexBuffer(new float[]{
-                -0.5f, 0.5f, 0f,
-                -0.5f, -0.5f, 0f,
-                0.5f, -0.5f, 0f,
-                0.5f, 0.5f, 0f,
-                -0.5f, 0.5f, 0f,
+                -0.5f, 0.5f, 0f,  //左上
+                -0.5f, -0.5f, 0f, //左下
+                0.5f, 0.5f, 0f,   //右上
+                0.5f, -0.5f, 0f,  //右下
         });
     }
 

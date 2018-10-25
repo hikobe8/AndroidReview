@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.ray.reopengles.simplegraph.GraphOptionActivity;
+import com.ray.reopengles.simplegraph.SimpleGraphActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,4 +19,9 @@ public class MainActivity extends AppCompatActivity {
     public void clickSimpleGraph(View view) {
         GraphOptionActivity.launch(this);
     }
+
+    public void clickTexture(View view) {
+        SimpleGraphActivity.launch(this, 2);
+    }
+
 }
