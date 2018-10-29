@@ -57,6 +57,22 @@ public class SimpleTexture implements GLSurfaceView.Renderer {
             1f, 1f
     };
 
+    //上下颠倒
+//    private static final float[] TEXTURE_COORS = {
+//            0f, 1f,
+//            0f, 0f,
+//            1f, 1f,
+//            1f, 0f
+//    };
+
+    //左右颠倒
+//    private static final float[] TEXTURE_COORS = {
+//            1f, 0f,
+//            1f, 1f,
+//            0f, 0f,
+//            0f, 1f,
+//    };
+
     private int mProgram;
     private int mMatrixHandle;
     private int mGlHTexture;
