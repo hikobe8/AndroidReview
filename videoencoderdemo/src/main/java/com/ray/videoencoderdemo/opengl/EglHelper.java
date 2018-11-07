@@ -1,5 +1,6 @@
 package com.ray.videoencoderdemo.opengl;
 
+import android.opengl.EGL14;
 import android.util.Log;
 import android.view.Surface;
 
@@ -81,10 +82,13 @@ public class EglHelper {
             throw new IllegalArgumentException("eglChooseConfig#2 failed");
         }
 
+        int[] attrib_list = {EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+                EGL10.EGL_NONE };
+
         if (eglContext != null) {
-            mEglContext = mEgl.eglCreateContext(mEglDisplay, configs[0], eglContext, null);
+            mEglContext = mEgl.eglCreateContext(mEglDisplay, configs[0], eglContext, attrib_list);
         } else {
-            mEglContext = mEgl.eglCreateContext(mEglDisplay, configs[0], EGL10.EGL_NO_CONTEXT, null);
+            mEglContext = mEgl.eglCreateContext(mEglDisplay, configs[0], EGL10.EGL_NO_CONTEXT, attrib_list);
         }
 
         mEglSurface = mEgl.eglCreateWindowSurface(mEglDisplay, configs[0], surface, null);
