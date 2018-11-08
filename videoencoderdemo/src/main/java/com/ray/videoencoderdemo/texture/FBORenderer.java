@@ -1,48 +1,25 @@
 package com.ray.videoencoderdemo.texture;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.opengl.GLUtils;
-import android.util.Log;
-
-import com.ray.videoencoderdemo.R;
-import com.ray.videoencoderdemo.opengl.RayEGLSurfaceView;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
-import static android.opengl.GLES20.GL_COLOR_ATTACHMENT0;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
-import static android.opengl.GLES20.GL_FRAMEBUFFER;
-import static android.opengl.GLES20.GL_FRAMEBUFFER_COMPLETE;
-import static android.opengl.GLES20.GL_LINEAR;
-import static android.opengl.GLES20.GL_NEAREST;
-import static android.opengl.GLES20.GL_RGBA;
 import static android.opengl.GLES20.GL_STATIC_DRAW;
-import static android.opengl.GLES20.GL_TEXTURE0;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
-import static android.opengl.GLES20.GL_TEXTURE_MAG_FILTER;
-import static android.opengl.GLES20.GL_TEXTURE_MIN_FILTER;
-import static android.opengl.GLES20.GL_TEXTURE_WRAP_S;
-import static android.opengl.GLES20.GL_TEXTURE_WRAP_T;
 import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
-import static android.opengl.GLES20.GL_UNSIGNED_BYTE;
 import static android.opengl.GLES20.GL_VERTEX_SHADER;
-import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glAttachShader;
 import static android.opengl.GLES20.glBindBuffer;
-import static android.opengl.GLES20.glBindFramebuffer;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glBufferData;
 import static android.opengl.GLES20.glBufferSubData;
-import static android.opengl.GLES20.glCheckFramebufferStatus;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glCompileShader;
@@ -50,26 +27,21 @@ import static android.opengl.GLES20.glCreateProgram;
 import static android.opengl.GLES20.glCreateShader;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glFramebufferTexture2D;
 import static android.opengl.GLES20.glGenBuffers;
-import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glLinkProgram;
 import static android.opengl.GLES20.glShaderSource;
-import static android.opengl.GLES20.glTexImage2D;
-import static android.opengl.GLES20.glTexParameterf;
 import static android.opengl.GLES20.glUniform1i;
-import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
 
 /***
  *  Author : ryu18356@gmail.com
- *  Create at 2018-11-07 17:58
- *  description : 使用VBO 缓存顶点数据
+ *  Create at 2018-11-08 14:03
+ *  description : 
  */
-public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
+public class FBORenderer {
 
     private static final String VERTEX_SHADER_CODE =
             "attribute vec4 vPosition;\n"
@@ -115,20 +87,9 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
     private int mGlHTexture;
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureCoordsBuffer;
-    private Context mContext;
     private int mVBOId;
-    private int mFBOId;
-    private int mImgTextureId;
-    private FBORenderer mFBORenderer;
 
-    public VBOTexture(Context context) {
-        mContext = context;
-        mFBORenderer = new FBORenderer();
-    }
-
-    @Override
-    public void onSurfaceCreated() {
-        mFBORenderer.onCreate();
+    public void onCreate(){
         vertexBuffer = ByteBuffer.allocateDirect(VERTEX_COORDS.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer()
@@ -148,8 +109,6 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         vPositionHandle = glGetAttribLocation(mProgram, "vPosition");
         vCoordinateHandle = glGetAttribLocation(mProgram, "vCoordinate");
         mGlHTexture = glGetUniformLocation(mProgram, "vTexture");
-        mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.fengj);
-
         //生成VBO
         int[] vbos = new int[1];
         glGenBuffers(1, vbos, 0);
@@ -163,92 +122,27 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         glBufferSubData(GL_ARRAY_BUFFER, VERTEX_COORDS.length * 4, TEXTURE_COORS.length * 4, textureCoordsBuffer);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        //创建FBO
-        int[] fbos = new int[1];
-        glGenBuffers(1, fbos, 0);
-        mFBOId = fbos[0];
-        glBindFramebuffer(GL_FRAMEBUFFER, mFBOId);
-
-        int[] texture = new int[1];
-        glGenTextures(1, texture, 0);
-        //绑定纹理
-        glBindTexture(GL_TEXTURE_2D, texture[0]);
-        glActiveTexture(GL_TEXTURE0);
-        glUniform1i(mGlHTexture, 0);
-        //设置缩小过滤为使用纹理中坐标最接近的一个像素的颜色作为需要绘制的像素颜色
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //设置放大过滤为使用纹理中坐标最接近的若干个颜色，通过加权平均算法得到需要绘制的像素颜色
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //设置环绕方向S，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //设置环绕方向T，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //通过以上参数生成纹理
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 720, 1280,0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture[0], 0);
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            Log.e("FBORenderer", "fbo error");
-        } else {
-            Log.e("FBORenderer", "fbo success");
-        }
-
-        //解绑纹理
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        mImgTextureId = createTexture();
     }
 
-    private Bitmap mBitmap;
-
-    private int createTexture() {
-        int[] texture = new int[1];
-        if (mBitmap != null && !mBitmap.isRecycled()) {
-            //生成纹理
-            glGenTextures(1, texture, 0);
-            //绑定纹理
-            glBindTexture(GL_TEXTURE_2D, texture[0]);
-            //设置缩小过滤为使用纹理中坐标最接近的一个像素的颜色作为需要绘制的像素颜色
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            //设置放大过滤为使用纹理中坐标最接近的若干个颜色，通过加权平均算法得到需要绘制的像素颜色
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            //设置环绕方向S，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            //设置环绕方向T，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            //通过以上参数生成纹理
-            GLUtils.texImage2D(GL_TEXTURE_2D, 0, mBitmap, 0);
-            //解绑纹理
-            glBindTexture(GL_TEXTURE_2D, 0);
-            return texture[0];
-        }
-
-        return 0;
-    }
-
-    @Override
     public void onSurfaceChanged(int width, int height) {
         glViewport(0, 0, width, height);
-        mFBORenderer.onSurfaceChanged(width, height);
     }
 
-    @Override
-    public void onDrawFrame() {
+    public void onDraw(int textureId){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0f,0f,0f,1f);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFBOId);
-        glUseProgram(mProgram);
         glUniform1i(mGlHTexture, 0);
-        glBindTexture(GL_TEXTURE_2D, mImgTextureId);
+        glBindTexture(GL_TEXTURE_2D, textureId);
         glBindBuffer(GL_ARRAY_BUFFER, mVBOId);
         glEnableVertexAttribArray(vPositionHandle);
         glVertexAttribPointer(vPositionHandle, 2, GL_FLOAT, false, 8, 0);
         glEnableVertexAttribArray(vCoordinateHandle);
         glVertexAttribPointer(vCoordinateHandle, 2, GL_FLOAT, false, 8, VERTEX_COORDS.length * 4);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, VERTEX_COORDS.length / 2);
+        //解绑VBO
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //解绑纹理
         glBindTexture(GL_TEXTURE_2D, 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        mFBORenderer.onDraw(mImgTextureId);
     }
+
 }
