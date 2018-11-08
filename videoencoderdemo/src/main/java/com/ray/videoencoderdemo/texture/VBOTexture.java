@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import com.ray.videoencoderdemo.R;
@@ -60,6 +61,7 @@ import static android.opengl.GLES20.glShaderSource;
 import static android.opengl.GLES20.glTexImage2D;
 import static android.opengl.GLES20.glTexParameterf;
 import static android.opengl.GLES20.glUniform1i;
+import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
@@ -75,8 +77,9 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
             "attribute vec4 vPosition;\n"
                     + "attribute vec2 vCoordinate;\n"
                     + "varying vec2 aCoordinate;\n"
+                    + "uniform mat4 uMVPMatrix;\n"
                     + "void main() {\n"
-                    + "  gl_Position = vPosition;\n"
+                    + "  gl_Position = uMVPMatrix * vPosition;\n"
                     + "  aCoordinate = vCoordinate;\n"
                     + "}";
 
@@ -101,6 +104,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
             1f, 0f,
             1f, 1f
     };
+    private int mMatrixHandle;
 
     private int loadShader(int type, String code) {
         int shader = glCreateShader(type);
@@ -120,6 +124,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
     private int mFBOId;
     private int mImgTextureId;
     private FBORenderer mFBORenderer;
+    private float[] mMatrix = new float[16];
 
     public VBOTexture(Context context) {
         mContext = context;
@@ -148,7 +153,8 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         vPositionHandle = glGetAttribLocation(mProgram, "vPosition");
         vCoordinateHandle = glGetAttribLocation(mProgram, "vCoordinate");
         mGlHTexture = glGetUniformLocation(mProgram, "vTexture");
-        mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.fengj);
+        mMatrixHandle = glGetUniformLocation(mProgram, "uMVPMatrix");
+        mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.lake);
 
         //生成VBO
         int[] vbos = new int[1];
@@ -185,7 +191,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         //设置环绕方向T，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         //通过以上参数生成纹理
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 720, 1280,0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mBitmap.getWidth(), mBitmap.getHeight(),0, GL_RGBA, GL_UNSIGNED_BYTE, null);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture[0], 0);
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             Log.e("FBORenderer", "fbo error");
@@ -230,6 +236,12 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
     public void onSurfaceChanged(int width, int height) {
         glViewport(0, 0, width, height);
         mFBORenderer.onSurfaceChanged(width, height);
+        float ratio = width * 1f / height;
+        if (width < height) {
+            Matrix.orthoM(mMatrix, 0, -1f, 1f, -1/ratio*mBitmap.getWidth()*1f/mBitmap.getHeight(), 1/ratio*mBitmap.getWidth()*1f/mBitmap.getHeight(), -1f, 1f);
+        } else {
+            Matrix.orthoM(mMatrix, 0, -mBitmap.getHeight()*1f/mBitmap.getWidth()*ratio, mBitmap.getHeight()*1f/mBitmap.getWidth()*ratio, -1f, 1f, -1f, 1f);
+        }
     }
 
     @Override
@@ -239,6 +251,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         glBindFramebuffer(GL_FRAMEBUFFER, mFBOId);
         glUseProgram(mProgram);
         glUniform1i(mGlHTexture, 0);
+        glUniformMatrix4fv(mMatrixHandle, 1, false, mMatrix, 0);
         glBindTexture(GL_TEXTURE_2D, mImgTextureId);
         glBindBuffer(GL_ARRAY_BUFFER, mVBOId);
         glEnableVertexAttribArray(vPositionHandle);

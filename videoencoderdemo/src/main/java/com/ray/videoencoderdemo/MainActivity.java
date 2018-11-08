@@ -1,21 +1,14 @@
 package com.ray.videoencoderdemo;
 
-import android.opengl.GLES20;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-
-import com.ray.videoencoderdemo.opengl.EglHelper;
-import com.ray.videoencoderdemo.opengl.MyGLSurfaceView;
+import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyGLSurfaceView surfaceView = new MyGLSurfaceView(this);
-        setContentView(surfaceView);
+        setContentView(R.layout.activity_main);
 //        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
 //            @Override
 //            public void surfaceCreated(SurfaceHolder holder) {

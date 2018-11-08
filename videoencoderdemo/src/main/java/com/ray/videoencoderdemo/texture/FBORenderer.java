@@ -1,7 +1,5 @@
 package com.ray.videoencoderdemo.texture;
 
-import android.content.Context;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
