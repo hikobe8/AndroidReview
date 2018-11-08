@@ -99,10 +99,10 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
     };
 
     private static final float[] TEXTURE_COORS = {
-            0f, 0f,
             0f, 1f,
-            1f, 0f,
-            1f, 1f
+            0f, 0f,
+            1f, 1f,
+            1f, 0f
     };
     private int mMatrixHandle;
 
@@ -242,6 +242,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         } else {
             Matrix.orthoM(mMatrix, 0, -mBitmap.getHeight()*1f/mBitmap.getWidth()*ratio, mBitmap.getHeight()*1f/mBitmap.getWidth()*ratio, -1f, 1f, -1f, 1f);
         }
+        Matrix.rotateM(mMatrix, 0, 180f, 1f, 0f, 0f);
     }
 
     @Override

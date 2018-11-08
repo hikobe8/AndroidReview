@@ -66,10 +66,10 @@ public class FBORenderer {
     };
 
     private static final float[] TEXTURE_COORS = {
-            0f, 0f,
             0f, 1f,
-            1f, 0f,
-            1f, 1f
+            0f, 0f,
+            1f, 1f,
+            1f, 0f
     };
 
     private int loadShader(int type, String code) {
