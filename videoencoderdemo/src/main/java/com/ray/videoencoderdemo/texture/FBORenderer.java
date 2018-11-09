@@ -23,6 +23,7 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glCompileShader;
 import static android.opengl.GLES20.glCreateProgram;
 import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGenBuffers;
@@ -31,6 +32,7 @@ import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glLinkProgram;
 import static android.opengl.GLES20.glShaderSource;
 import static android.opengl.GLES20.glUniform1i;
+import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
 
@@ -127,8 +129,9 @@ public class FBORenderer {
     }
 
     public void onDraw(int textureId){
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0f,0f,0f,1f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(1f, 0f, 0f, 1f);
+        glUseProgram(mProgram);
         glUniform1i(mGlHTexture, 0);
         glBindTexture(GL_TEXTURE_2D, textureId);
         glBindBuffer(GL_ARRAY_BUFFER, mVBOId);
@@ -141,6 +144,8 @@ public class FBORenderer {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         //解绑纹理
         glBindTexture(GL_TEXTURE_2D, 0);
+        glDisableVertexAttribArray(vPositionHandle);
+        glDisableVertexAttribArray(vCoordinateHandle);
     }
 
 }

@@ -3,6 +3,7 @@ package com.ray.videoencoderdemo.texture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -13,6 +14,9 @@ import com.ray.videoencoderdemo.opengl.RayEGLSurfaceView;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
@@ -49,6 +53,7 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glCompileShader;
 import static android.opengl.GLES20.glCreateProgram;
 import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glFramebufferTexture2D;
@@ -123,6 +128,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
     private int mVBOId;
     private int mFBOId;
     private int mImgTextureId;
+    private int mTextureId;
     private FBORenderer mFBORenderer;
     private float[] mMatrix = new float[16];
 
@@ -131,7 +137,6 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         mFBORenderer = new FBORenderer();
     }
 
-    @Override
     public void onSurfaceCreated() {
         mFBORenderer.onCreate();
         vertexBuffer = ByteBuffer.allocateDirect(VERTEX_COORDS.length * 4)
@@ -178,6 +183,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
 
         int[] texture = new int[1];
         glGenTextures(1, texture, 0);
+        mTextureId = texture[0];
         //绑定纹理
         glBindTexture(GL_TEXTURE_2D, texture[0]);
         glActiveTexture(GL_TEXTURE0);
@@ -191,7 +197,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         //设置环绕方向T，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         //通过以上参数生成纹理
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mBitmap.getWidth(), mBitmap.getHeight(),0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mBitmap.getWidth(), mBitmap.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture[0], 0);
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             Log.e("FBORenderer", "fbo error");
@@ -232,23 +238,26 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         return 0;
     }
 
-    @Override
+    private int mWidth, mHeight;
+
     public void onSurfaceChanged(int width, int height) {
-        glViewport(0, 0, width, height);
-        mFBORenderer.onSurfaceChanged(width, height);
+//        glViewport(0, 0, width, height);
+//        mFBORenderer.onSurfaceChanged(width, height);
+        mWidth = width;
+        mHeight = height;
         float ratio = width * 1f / height;
         if (width < height) {
-            Matrix.orthoM(mMatrix, 0, -1f, 1f, -1/ratio*mBitmap.getWidth()*1f/mBitmap.getHeight(), 1/ratio*mBitmap.getWidth()*1f/mBitmap.getHeight(), -1f, 1f);
+            Matrix.orthoM(mMatrix, 0, -1f, 1f, -1 / ratio * mBitmap.getWidth() * 1f / mBitmap.getHeight(), 1 / ratio * mBitmap.getWidth() * 1f / mBitmap.getHeight(), -1f, 1f);
         } else {
-            Matrix.orthoM(mMatrix, 0, -mBitmap.getHeight()*1f/mBitmap.getWidth()*ratio, mBitmap.getHeight()*1f/mBitmap.getWidth()*ratio, -1f, 1f, -1f, 1f);
+            Matrix.orthoM(mMatrix, 0, -mBitmap.getHeight() * 1f / mBitmap.getWidth() * ratio, mBitmap.getHeight() * 1f / mBitmap.getWidth() * ratio, -1f, 1f, -1f, 1f);
         }
         Matrix.rotateM(mMatrix, 0, 180f, 1f, 0f, 0f);
     }
 
-    @Override
     public void onDrawFrame() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0f,0f,0f,1f);
+        glViewport(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(1f, 0f, 0f, 1f);
         glBindFramebuffer(GL_FRAMEBUFFER, mFBOId);
         glUseProgram(mProgram);
         glUniform1i(mGlHTexture, 0);
@@ -263,6 +272,7 @@ public class VBOTexture implements RayEGLSurfaceView.RayGLRenderer {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        mFBORenderer.onDraw(mImgTextureId);
+        glViewport(0, 0,mWidth, mHeight);
+        mFBORenderer.onDraw(mTextureId);
     }
 }
