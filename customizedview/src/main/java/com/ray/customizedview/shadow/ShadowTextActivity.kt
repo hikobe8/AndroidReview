@@ -8,7 +8,7 @@ import com.ray.customizedview.R
 class ShadowTextActivity : AppCompatActivity() {
 
     companion object {
-        fun launchActivty(context: AppCompatActivity) {
+        fun launchActivity(context: AppCompatActivity) {
             context.startActivity(Intent(context, ShadowTextActivity::class.java))
         }
     }

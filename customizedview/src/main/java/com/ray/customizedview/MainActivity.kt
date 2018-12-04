@@ -3,6 +3,7 @@ package com.ray.customizedview
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.ray.customizedview.learn_styles.LearnStylesActivity
 import com.ray.customizedview.path.PathActivity
 import com.ray.customizedview.shader.ShaderActivity
 import com.ray.customizedview.shadow.ShadowTextActivity
@@ -23,7 +24,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clickShadowText(view: View){
-        ShadowTextActivity.launchActivty(this)
+        ShadowTextActivity.launchActivity(this)
+    }
+
+    fun clickToolBar(view: View) {
+        LearnStylesActivity.launchActivity(this)
     }
 
 }

@@ -25,4 +25,10 @@
         android:text="带阴影的文字"
         android:onClick="clickShadowText"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="自定义ToolBar"
+        android:onClick="clickToolBar"/>
+
 </LinearLayout>
