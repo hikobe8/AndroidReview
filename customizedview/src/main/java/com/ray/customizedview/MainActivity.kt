@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.ray.customizedview.learn_styles.LearnStylesActivity
 import com.ray.customizedview.path.PathActivity
+import com.ray.customizedview.scroll.ScrollAViewByLayoutActivity
 import com.ray.customizedview.shader.ShaderActivity
 import com.ray.customizedview.shadow.ShadowTextActivity
 
@@ -29,6 +30,10 @@ class MainActivity : AppCompatActivity() {
 
     fun clickToolBar(view: View) {
         LearnStylesActivity.launchActivity(this)
+    }
+
+    fun clickMoveViewByLayout(view: View) {
+        ScrollAViewByLayoutActivity.launchActivty(this)
     }
 
 }

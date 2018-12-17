@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".path.PathActivity"/>
+        <activity android:name=".shader.ShaderActivity"/>
+        <activity android:name=".shadow.ShadowTextActivity">
+        </activity>
+        <activity android:name=".scroll.ScrollAViewByLayoutActivity"/>
         <activity android:name=".path.PathActivity" />
         <activity android:name=".shader.ShaderActivity" />
         <activity android:name=".shadow.ShadowTextActivity"></activity>

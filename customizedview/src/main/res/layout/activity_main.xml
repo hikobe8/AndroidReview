@@ -31,4 +31,10 @@
         android:text="自定义ToolBar"
         android:onClick="clickToolBar"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="使用layout方法移动View"
+        android:onClick="clickMoveViewByLayout"/>
+
 </LinearLayout>
