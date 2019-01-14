@@ -8,4 +8,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    !-- 继承AppCompat.ActionBar，覆盖background，titleTextStyle -->
+    <style name="barStyle" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@android:color/black</item>
+        <item name="android:titleTextStyle">@style/TitleTextStyle</item>
+
+        <!-- Support library compatibility -->
+        <item name="titleTextStyle">@style/TitleTextStyle</item>
+    </style>
+
+    <!-- 继承AppCompat.Title，覆盖textColor -->
+    <style name="TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">#fff</item>
+    </style>
+
 </resources>
