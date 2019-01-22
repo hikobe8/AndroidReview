@@ -15,15 +15,12 @@ import android.view.View
 class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private val mPoints = ArrayList<Point>()
-    private val mPointPaint = Paint().apply {
-        isAntiAlias = true
-        color = Color.BLUE
-    }
 
     companion object {
         private const val STATE_NONE = 0
         private const val STATE_MOVE_POINT = 1
         private const val STATE_MOVE_LINE = 2
+        private const val SHOW_CLICK_REGION = true
     }
 
     /**
@@ -55,6 +52,33 @@ class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private var mLastX = 0f
     private var mLastY = 0f
 
+    private val mPointPaint = Paint().apply {
+        isAntiAlias = true
+        color = Color.BLUE
+    }
+
+    private val mLinePaint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        color = Color.BLUE
+        strokeWidth = 4f
+    }
+
+
+    private val mRegionPaint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        color = Color.RED
+        strokeWidth = 2f
+    }
+
+    private val mClickRegionPaint = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 100f
+    }
+
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
         when (event?.action) {
@@ -81,7 +105,7 @@ class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                     }
                     changeClickRegion()
                     invalidate()
-                } else if (mState == STATE_MOVE_LINE){
+                } else if (mState == STATE_MOVE_LINE) {
                     //移动线段整体
                     val offsetX = event.x - mLastX
                     val offsetY = event.y - mLastY
@@ -129,32 +153,21 @@ class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         changeClickRegion()
     }
 
-    private val mClickRegionPaint = Paint().apply {
-        style = Paint.Style.STROKE
-        strokeCap = Paint.Cap.ROUND
-        strokeWidth = 100f
-    }
-
     private fun changeClickRegion() {
         mCurvePath.reset()
-        mCurvePath.reset()
         mCurvePath.addPath(CurveUtil.getCurvePathFromPoints(mPoints, 0.6))
-        mClickPath = mCurvePath
+        mClickPath.set(mCurvePath)
         mClickRegionPaint.getFillPath(mCurvePath, mClickPath)
         mPathClickRegion.setPath(mClickPath, mPathClipRegion)
     }
 
-    private val mRegionPaint = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.STROKE
-        color = Color.GRAY
-        strokeWidth = 5f
-    }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.drawPath(mClickPath, mRegionPaint)
-        canvas?.drawPath(mCurvePath, mRegionPaint)
+        if (SHOW_CLICK_REGION) {
+            canvas?.drawPath(mClickPath, mRegionPaint)
+        }
+        canvas?.drawPath(mCurvePath, mLinePaint)
         for (point in mPoints) {
             canvas?.drawCircle(point.x.toFloat(), point.y.toFloat(), 20f, mPointPaint)
         }
