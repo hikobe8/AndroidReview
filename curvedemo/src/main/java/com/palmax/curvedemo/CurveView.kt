@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 
+
 /***
  *  Author : ryu18356@gmail.com
  *  Create at 2019-01-21 17:24
@@ -19,15 +20,40 @@ class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         color = Color.BLUE
     }
 
+    companion object {
+        private const val STATE_NONE = 0
+        private const val STATE_MOVE_POINT = 1
+        private const val STATE_MOVE_LINE = 2
+    }
+
     /**
-     * 正在移动的标志
+     * 控制点正在移动的标志
      */
-    private var mNeedMove = false
+    private var mState = STATE_NONE
 
     /**
      * 正在移动的点的下标
      */
     private var mMovingIndex = -1
+
+    /**
+     * 线段可点击区域
+     */
+    private var mPathClickRegion = Region()
+
+    private var mPathClipRegion: Region? = null
+
+    /**
+     * 曲线线段路径
+     */
+    private val mCurvePath = Path()
+    /**
+     * 曲线线段点击可视区域
+     */
+    private var mClickPath: Path = Path()
+
+    private var mLastX = 0f
+    private var mLastY = 0f
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
@@ -35,21 +61,42 @@ class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
             MotionEvent.ACTION_DOWN -> {
                 mMovingIndex = checkMovingPoint(event)
                 if (mMovingIndex != -1) {
-                    mNeedMove = true
+                    mState = STATE_MOVE_POINT
                 }
+                if (mState != STATE_MOVE_POINT) {
+                    val op: Boolean = mPathClickRegion.contains(event.x.toInt(), event.y.toInt())
+                    if (op) {
+                        mLastX = event.x
+                        mLastY = event.y
+                        mState = STATE_MOVE_LINE
+                    }
+                }
+                invalidate()
             }
             MotionEvent.ACTION_MOVE -> {
-                if (mNeedMove) {
+                if (mState == STATE_MOVE_POINT) {
                     mPoints[mMovingIndex].apply {
                         x = event.x.toInt()
                         y = event.y.toInt()
                     }
                     changeClickRegion()
                     invalidate()
+                } else if (mState == STATE_MOVE_LINE){
+                    //移动线段整体
+                    val offsetX = event.x - mLastX
+                    val offsetY = event.y - mLastY
+                    mPoints.map {
+                        it.x += offsetX.toInt()
+                        it.y += offsetY.toInt()
+                    }
+                    changeClickRegion()
+                    invalidate()
+                    mLastX = event.x
+                    mLastY = event.y
                 }
             }
             MotionEvent.ACTION_UP -> {
-                mNeedMove = false
+                mState = STATE_NONE
             }
         }
 
@@ -78,27 +125,23 @@ class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         mPoints.add(Point((w / 2f + .5f).toInt(), (h * 3 / 4f + .5f).toInt()))
         mPoints.add(Point((w * 2 / 3f + .5f).toInt(), (h / 2f + .5f).toInt()))
         mPoints.add(Point((w * 4f / 5 + .5f).toInt(), h - 100))
+        mPathClipRegion = Region(0, 0, w, h)
         changeClickRegion()
     }
 
-    private fun changeClickRegion() {
-        mPath.reset()
-        val clickPixels = 100
-        mPath.moveTo(mPoints[0].x.toFloat(), mPoints[0].y.toFloat() - clickPixels)
-        mPath.lineTo(mPoints[1].x.toFloat(), mPoints[1].y.toFloat() - clickPixels)
-        mPath.lineTo(mPoints[2].x.toFloat(), mPoints[2].y.toFloat() - clickPixels)
-        mPath.lineTo(mPoints[3].x.toFloat(), mPoints[3].y.toFloat() - clickPixels)
-        mPath.lineTo(mPoints[3].x.toFloat(), mPoints[3].y.toFloat() + clickPixels)
-        mPath.lineTo(mPoints[2].x.toFloat(), mPoints[2].y.toFloat() + clickPixels)
-        mPath.lineTo(mPoints[1].x.toFloat(), mPoints[1].y.toFloat() + clickPixels)
-        mPath.lineTo(mPoints[0].x.toFloat(), mPoints[0].y.toFloat() + clickPixels)
-        mPath.close()
+    private val mClickRegionPaint = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 100f
     }
 
-    private val mPath = Path()
-
-    private val mMatrix = Matrix().apply {
-        setTranslate(-40f, 0f)
+    private fun changeClickRegion() {
+        mCurvePath.reset()
+        mCurvePath.reset()
+        mCurvePath.addPath(CurveUtil.getCurvePathFromPoints(mPoints, 0.6))
+        mClickPath = mCurvePath
+        mClickRegionPaint.getFillPath(mCurvePath, mClickPath)
+        mPathClickRegion.setPath(mClickPath, mPathClipRegion)
     }
 
     private val mRegionPaint = Paint().apply {
@@ -110,9 +153,8 @@ class CurveView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        CurveUtil.drawCurvesFromPoints(canvas, mPoints, 0.6, Color.RED, 4f)
-        mMatrix.setTranslate(80f, 0f)
-        canvas?.drawPath(mPath, mRegionPaint)
+        canvas?.drawPath(mClickPath, mRegionPaint)
+        canvas?.drawPath(mCurvePath, mRegionPaint)
         for (point in mPoints) {
             canvas?.drawCircle(point.x.toFloat(), point.y.toFloat(), 20f, mPointPaint)
         }
