@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ArcFaceTest</string>
+    <string name="active_success">active success</string>
+    <string name="already_activated">already activated</string>
+    <string name="active_failed">active failed,code is %d</string>
+    <string name="processing">processing</string>
+    <string name="get_picture_failed">failed to get picture!</string>
+    <string name="permission_denied">permission denied!</string>
+</resources>
