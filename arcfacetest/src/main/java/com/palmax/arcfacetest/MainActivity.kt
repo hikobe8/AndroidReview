@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.Toast
 import com.arcsoft.face.ErrorInfo
+import com.palmax.arcfacelib.ArcFaceManager
 import com.palmax.arcfacelib.FaceRepository
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
@@ -22,18 +24,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        activeEngine()
+        if (!checkPermissions(NEEDED_PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS)
+        } else {
+            ArcFaceManager.init(this)
+        }
     }
 
     /**
      * 激活引擎
      *
      */
-    private fun activeEngine() {
-        if (!checkPermissions(NEEDED_PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS)
-            return
-        }
+    fun activeEngine(v:View) {
         Observable.create(ObservableOnSubscribe<Int> {
             it.onNext(FaceRepository.activeEngine(this))
             it.onComplete()
@@ -71,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                 isAllGranted = isAllGranted and (grantResult == PackageManager.PERMISSION_GRANTED)
             }
             if (isAllGranted) {
-                activeEngine()
+                ArcFaceManager.init(this)
             } else {
                 showToast(getString(R.string.permission_denied))
             }
