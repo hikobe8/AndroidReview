@@ -27,7 +27,7 @@ import java.util.List;
 public class FaceRepository {
     private static final String TAG = "FaceRepository";
     public static final String IMG_SUFFIX = ".jpg";
-    private static FaceEngine faceEngine = null;
+    private static FaceEngine sXFaceEngine = null;
     private static FaceRepository sFaceRepository = null;
     private static List<FaceRegisterInfo> faceRegisterInfoList;
     public static String ROOT_PATH;
@@ -66,14 +66,14 @@ public class FaceRepository {
      */
     public boolean init(Context context) {
         synchronized (this) {
-            if (faceEngine == null && context != null) {
-                faceEngine = new FaceEngine();
-                int engineCode = faceEngine.init(context, FaceEngine.ASF_DETECT_MODE_IMAGE, FaceEngine.ASF_OP_0_HIGHER_EXT, 16, 1, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT);
+            if (sXFaceEngine == null && context != null) {
+                sXFaceEngine = new FaceEngine();
+                int engineCode = sXFaceEngine.init(context, FaceEngine.ASF_DETECT_MODE_IMAGE, FaceEngine.ASF_OP_0_HIGHER_EXT, 16, 1, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT);
                 if (engineCode == ErrorInfo.MOK) {
                     initFaceList(context);
                     return true;
                 } else {
-                    faceEngine = null;
+                    sXFaceEngine = null;
                     Log.e(TAG, "init: failed! code = " + engineCode);
                     return false;
                 }
@@ -91,9 +91,9 @@ public class FaceRepository {
                 faceRegisterInfoList.clear();
                 faceRegisterInfoList = null;
             }
-            if (faceEngine != null) {
-                faceEngine.unInit();
-                faceEngine = null;
+            if (sXFaceEngine != null) {
+                sXFaceEngine.unInit();
+                sXFaceEngine = null;
             }
         }
     }
@@ -207,7 +207,7 @@ public class FaceRepository {
      */
     public boolean register(Context context, byte[] nv21, int width, int height, String name) {
         synchronized (this) {
-            if (faceEngine == null || context == null || nv21 == null || width % 4 != 0 || nv21.length != width * height * 3 / 2) {
+            if (sXFaceEngine == null || context == null || nv21 == null || width % 4 != 0 || nv21.length != width * height * 3 / 2) {
                 return false;
             }
 
@@ -233,12 +233,12 @@ public class FaceRepository {
             }
             //1.人脸检测
             List<FaceInfo> faceInfoList = new ArrayList<>();
-            int code = faceEngine.detectFaces(nv21, width, height, FaceEngine.CP_PAF_NV21, faceInfoList);
+            int code = sXFaceEngine.detectFaces(nv21, width, height, FaceEngine.CP_PAF_NV21, faceInfoList);
             if (code == ErrorInfo.MOK && faceInfoList.size() > 0) {
                 FaceFeature faceFeature = new FaceFeature();
 
                 //2.特征提取
-                code = faceEngine.extractFaceFeature(nv21, width, height, FaceEngine.CP_PAF_NV21, faceInfoList.get(0), faceFeature);
+                code = sXFaceEngine.extractFaceFeature(nv21, width, height, FaceEngine.CP_PAF_NV21, faceInfoList.get(0), faceFeature);
                 String userName = name == null ? String.valueOf(System.currentTimeMillis()) : name;
                 try {
                     //3.保存注册结果（注册图、特征数据）
@@ -310,7 +310,7 @@ public class FaceRepository {
      * @return 比对结果
      */
     public CompareResult getTopOfFaceLib(FaceFeature faceFeature) {
-        if (faceEngine == null || isProcessing || faceFeature == null || faceRegisterInfoList == null || faceRegisterInfoList.size() == 0) {
+        if (sXFaceEngine == null || isProcessing || faceFeature == null || faceRegisterInfoList == null || faceRegisterInfoList.size() == 0) {
             return null;
         }
         FaceFeature tempFaceFeature = new FaceFeature();
@@ -320,7 +320,7 @@ public class FaceRepository {
         isProcessing = true;
         for (int i = 0; i < faceRegisterInfoList.size(); i++) {
             tempFaceFeature.setFeatureData(faceRegisterInfoList.get(i).getFeatureData());
-            faceEngine.compareFaceFeature(faceFeature, tempFaceFeature, faceSimilar);
+            sXFaceEngine.compareFaceFeature(faceFeature, tempFaceFeature, faceSimilar);
             if (faceSimilar.getScore() > maxSimilar) {
                 maxSimilar = faceSimilar.getScore();
                 maxSimilarIndex = i;

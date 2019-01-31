@@ -23,9 +23,9 @@ public class ArcFaceManager {
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void init(Context context) {
         File soFile1;
-        soFile1 = new File(context.getFilesDir(), "libarcsoft_face_engine.so");
+        soFile1 = new File(context.getDir("jniLibs", Context.MODE_PRIVATE), "libarcsoft_face_engine.so");
         File soFile2;
-        soFile2 = new File(context.getFilesDir(), "libarcsoft_face.so");
+        soFile2 = new File(context.getDir("jniLibs", Context.MODE_PRIVATE), "libarcsoft_face.so");
         if (soFile1.exists()) {
             System.load(soFile1.getAbsolutePath());
         } else if (soFile2.exists()) {
@@ -48,7 +48,7 @@ public class ArcFaceManager {
                 try {
                     for (File file : soFile) {
                         InputStream inputStream = context.getResources().getAssets().open(file.getName());
-                        FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_PRIVATE);
+                        FileOutputStream fos = new FileOutputStream(file);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         byte[] buffer = new byte[1024];
                         int len;
