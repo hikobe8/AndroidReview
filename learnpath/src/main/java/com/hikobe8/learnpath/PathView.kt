@@ -16,43 +16,82 @@ import android.widget.Toast
  */
 class PathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : View(context, attrs, defStyleAttr) {
 
-    constructor(context: Context?):this(context, null, 0)
+    constructor(context: Context?) : this(context, null, 0)
 
-    constructor(context: Context?, attrs: AttributeSet?):this(context, attrs, 0)
+    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
 
-    private val mPath  = Path()
-    private val mPaint = Paint().apply {
+    private val mOuterPath = Path()
+    private val mInnerPath = Path()
+
+    private val mOuterPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.STROKE
         strokeWidth = 10f
         color = Color.RED
     }
-    private lateinit var mPathMeasure:PathMeasure
-    private var mPathLength = 0f
+    private val mInnerPaint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        strokeWidth = 10f
+        color = Color.BLUE
+    }
+
+    private var mOuterPathLength = 0f
+    private var mInnerPathLength = 0f
 
     init {
-        mPath.reset()
+        mOuterPath.reset()
+        mInnerPath.reset()
+    }
+
+    fun play() {
+        mInnerPaint.pathEffect = null
+        mOuterPaint.pathEffect = null
+        invalidate()
+        ObjectAnimator.ofFloat(this@PathView, "phase", 0.0f, 1.0f).apply {
+            duration = 2000
+        }.start()
+        postDelayed({
+            ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = 2000
+                addUpdateListener {
+                    val value = it.animatedValue as Float
+                    mInnerPaint.pathEffect = createPathEffect(mInnerPathLength, value, 0.0f)
+                    invalidate()
+                }
+            }.start()
+        }, 1000)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        mPath.arcTo(RectF(100f, 100f, 200f, 200f), 90f, 270f)
-        mPath.arcTo(RectF(600f, 400f, 800f, 800f), 90f, -270f)
-        mPathMeasure = PathMeasure(mPath, false)
-        mPathLength = mPathMeasure.length
-        postDelayed({
-            Toast.makeText(context, "开始动态绘制改路径", Toast.LENGTH_SHORT).show()
-            ObjectAnimator.ofFloat(this@PathView, "phase", 0.0f, 1.0f).apply {
-                duration = 3000
-            }.start()
-
-        }, 1000)
+        mOuterPath.addCircle(w / 2f, h / 2f, 400f, Path.Direction.CW)
+        mInnerPath.moveTo(w / 2f, h / 2f - 400f)
+        mInnerPath.lineTo(w / 2f - 400f, h / 2f)
+        mInnerPath.lineTo(w / 2f, h / 2f + 400f)
+        mInnerPath.lineTo(w / 2f + 400f, h / 2f)
+        mInnerPath.lineTo(w / 2f, h / 2f - 400f)
+        mInnerPath.addCircle(w / 2f, h / 2f, 200f, Path.Direction.CW)
+        mInnerPath.addPath(Path().apply {
+            moveTo(w / 2f, h / 2f - 200f)
+            lineTo(w / 2f, h / 2f + 200f)
+        })
+        mInnerPath.addPath(Path().apply {
+            moveTo(w / 2f - 200f, h / 2f)
+            lineTo(w / 2f + 200f, h / 2f)
+        })
+        val pathMeasure = PathMeasure(mOuterPath, false)
+        mOuterPathLength = pathMeasure.length
+        pathMeasure.setPath(mInnerPath, false)
+        mInnerPathLength = pathMeasure.length
+        Toast.makeText(context, "开始动态绘制改路径", Toast.LENGTH_SHORT).show()
+        play()
     }
 
     //is called by animtor object
     fun setPhase(phase: Float) {
         Log.d("PathView", "setPhase called with:" + phase.toString())
-        mPaint.pathEffect = createPathEffect(mPathLength, phase, 0.0f)
+        mOuterPaint.pathEffect = createPathEffect(mOuterPathLength, phase, 0.0f)
         invalidate()//will calll onDraw
     }
 
@@ -63,11 +102,10 @@ class PathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vie
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        mPaint.strokeWidth = 10f
-        mPaint.color = Color.RED
-        canvas?.drawPath(mPath, mPaint)
-        mPaint.color = Color.BLUE
-        mPaint.strokeWidth = 20f
+        if (mOuterPaint.pathEffect != null)
+            canvas?.drawPath(mOuterPath, mOuterPaint)
+        if (mInnerPaint.pathEffect != null)
+            canvas?.drawPath(mInnerPath, mInnerPaint)
     }
 
 }
