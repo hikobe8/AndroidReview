@@ -22,6 +22,7 @@ class PathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vie
 
     private val mOuterPath = Path()
     private val mInnerPath = Path()
+    private val mPointList = ArrayList<PointF>()
 
     private val mOuterPaint = Paint().apply {
         isAntiAlias = true
@@ -36,12 +37,20 @@ class PathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vie
         color = Color.BLUE
     }
 
+    private val mPointPaint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.FILL_AND_STROKE
+        strokeWidth = 1f
+        color = Color.GREEN
+    }
+
     private var mOuterPathLength = 0f
     private var mInnerPathLength = 0f
 
     init {
         mOuterPath.reset()
         mInnerPath.reset()
+        mPointList.clear()
     }
 
     fun play() {
@@ -67,7 +76,9 @@ class PathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vie
         super.onSizeChanged(w, h, oldw, oldh)
         mOuterPath.addCircle(w / 2f, h / 2f, 400f, Path.Direction.CW)
         mInnerPath.moveTo(w / 2f, h / 2f - 400f)
+        mPointList.add(PointF(w / 2f, h / 2f - 400f))
         mInnerPath.lineTo(w / 2f - 400f, h / 2f)
+        mPointList.add(PointF(w / 2f - 400f, h / 2f))
         mInnerPath.lineTo(w / 2f, h / 2f + 400f)
         mInnerPath.lineTo(w / 2f + 400f, h / 2f)
         mInnerPath.lineTo(w / 2f, h / 2f - 400f)
@@ -100,12 +111,25 @@ class PathView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vie
                 pathLength - phase * pathLength)
     }
 
+    override fun dispatchDraw(canvas: Canvas?) {
+        super.dispatchDraw(canvas)
+        mInnerPaint.color = Color.GREEN
+        mInnerPaint.pathEffect = null
+        for (pointF in mPointList) {
+            canvas?.drawCircle(pointF.x, pointF.y, 20f, mPointPaint)
+        }
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+
+        mInnerPaint.color = Color.BLUE
         if (mOuterPaint.pathEffect != null)
             canvas?.drawPath(mOuterPath, mOuterPaint)
-        if (mInnerPaint.pathEffect != null)
+        if (mInnerPaint.pathEffect != null) {
             canvas?.drawPath(mInnerPath, mInnerPaint)
+            mInnerPaint.xfermode = null
+        }
     }
 
 }
