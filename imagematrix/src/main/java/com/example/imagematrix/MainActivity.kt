@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 //                    postScale(scale.toFloat(), scale.toFloat(),result.width/2f, result.height/2f)
                     setRectToRect(RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat()),
                             RectF(0f, 0f, result.width.toFloat(), result.height.toFloat())
-                            , Matrix.ScaleToFit.CENTER)
+                            , Matrix.ScaleToFit.CENTER) //fitCenter
                 }
                 canvas.drawBitmap(bitmap, mt, null)
                 iv.scaleType = ImageView.ScaleType.MATRIX
