@@ -1,1 +1,2 @@
-include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo', ':customizedview', ':opengl', ':reopengles', ':videoencoderdemo', ':circletabview', ":stmobile"
+include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo', ':customizedview', ':opengl', ':reopengles', ':videoencoderdemo', ':learntransition', ':ovalanimation', ':curvedemo', ':imagecompare', ':commonutil', ':arcfacetest', ':arcfacelib', ':imagematrix', ':androidripple', ':learnpath', ":stmobile"
+
