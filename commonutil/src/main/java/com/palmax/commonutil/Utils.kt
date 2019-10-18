@@ -1,6 +1,6 @@
 package com.palmax.commonutil
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.provider.MediaStore
 
@@ -12,7 +12,7 @@ import android.provider.MediaStore
 
 object ImagePicker {
 
-    fun choosePhoto(activity: Activity, reqCode: Int = 0) {
+    fun choosePhoto(activity: AppCompatActivity, reqCode: Int = 0) {
         val intentToPickPic = Intent(Intent.ACTION_PICK, null)
         // 如果限制上传到服务器的图片类型时可以直接写如："image/jpeg 、 image/png等的类型" 所有类型则写 "image/*"
         intentToPickPic.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/jpeg");

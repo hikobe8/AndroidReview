@@ -2,7 +2,7 @@ package com.example.imagematrix
 
 import android.graphics.*
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
 

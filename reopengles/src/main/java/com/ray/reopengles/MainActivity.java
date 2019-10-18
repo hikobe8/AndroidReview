@@ -1,7 +1,7 @@
 package com.ray.reopengles;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 
 import com.ray.reopengles.simplegraph.GraphOptionActivity;

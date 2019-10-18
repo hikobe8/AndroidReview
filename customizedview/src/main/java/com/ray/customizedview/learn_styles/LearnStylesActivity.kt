@@ -2,7 +2,7 @@ package com.ray.customizedview.learn_styles
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.ray.customizedview.R
 
 class LearnStylesActivity : AppCompatActivity() {

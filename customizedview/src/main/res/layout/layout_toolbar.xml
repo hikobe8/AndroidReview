@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
         android:id="@+id/iv_back"
@@ -8,7 +9,7 @@
         android:layout_centerVertical="true"
         style="?actionButtonStyle"
         android:clickable="true"
-        android:src="@drawable/baseline_arrow_back_white_48dp" />
+        app:srcCompat="@drawable/baseline_arrow_back_white_48dp" />
 
     <TextView
         android:layout_toRightOf="@id/iv_back"
