@@ -21,4 +21,8 @@ class MainActivity : AppCompatActivity() {
         PieChartActivity.launch(this)
     }
 
+    fun avatar(view: View) {
+        AvatarActivity.launch(this)
+    }
+
 }
