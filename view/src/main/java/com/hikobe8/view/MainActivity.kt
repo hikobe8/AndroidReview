@@ -17,4 +17,8 @@ class MainActivity : AppCompatActivity() {
         DashboardActivity.launch(this)
     }
 
+    fun piechart(view: View) {
+        PieChartActivity.launch(this)
+    }
+
 }
