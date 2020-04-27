@@ -1,2 +1,3 @@
 include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo', ':customizedview', ':opengl', ':reopengles', ':videoencoderdemo', ':learntransition', ':ovalanimation', ':curvedemo', ':imagecompare', ':commonutil', ':arcfacetest', ':arcfacelib', ':imagematrix', ':androidripple', ':learnpath', ':learnretrofit', ':constraint', ':view', ":stmobile"
-
+include ':glide'
+include ':coroutine'

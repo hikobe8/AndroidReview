@@ -1,4 +1,4 @@
-package com.jm.jiedian.util;
+package com.x.glide;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -8,25 +8,24 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
-/**
- * Created by haoyuew on 2017/9/1.
- */
+import java.security.MessageDigest;
+
 
 public class GlideRoundTransform extends BitmapTransformation {
 
     private static float radius = 16f;
     private static float desity;
 
-    public GlideRoundTransform(Context context) {
-        this(context, 16);
+    public GlideRoundTransform() {
         desity = Resources.getSystem().getDisplayMetrics().density;
     }
 
-    public GlideRoundTransform(Context context, int dp) {
-        super(context);
+    public GlideRoundTransform(int dp) {
         desity = Resources.getSystem().getDisplayMetrics().density;
         this.radius = desity * dp;
     }
@@ -53,8 +52,8 @@ public class GlideRoundTransform extends BitmapTransformation {
         return result;
     }
 
-    @Override public String getId() {
-        return getClass().getName() + Math.round(radius);
-    }
+    @Override
+    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
 
+    }
 }
