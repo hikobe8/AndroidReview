@@ -1,31 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.ray.firstplugin'
 
 afterEvaluate {
     println 'gradle配置完成'
 }
 
-class UselessPlugin implements Plugin<Project> {
-
-    @Override
-    void apply(Project target) {
-        println '插件UselessPlugin 已配置'
-        def extension = target.extensions.create('pluginParams', MyExtension)
-        target.afterEvaluate {
-            println extension.name
-        }
-    }
-}
-
-class MyExtension {
-    def name = 'name'
-}
-
-apply(plugin: UselessPlugin)
-
-pluginParams {
-    name 'Useless Param'
+firstPlugin {
+    name 'first plugin'
 }
 
 android {
