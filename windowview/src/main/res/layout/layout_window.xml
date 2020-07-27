@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hello.windowview.MyWindow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:background="#123456"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/close"
+        android:text="关闭"
+        android:layout_gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</com.hello.windowview.MyWindow>

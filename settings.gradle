@@ -2,3 +2,4 @@ include ':LaunchModeReview', ':okhttpdemo', ':rxjavademo', ':customizedview', ':
 include ':glide'
 include ':coroutine'
 include ':gradledemo'
+include ':windowview'
