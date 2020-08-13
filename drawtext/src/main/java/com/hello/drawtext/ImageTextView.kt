@@ -26,7 +26,7 @@ class ImageTextView(context: Context?, attrs: AttributeSet?) : View(context, att
 
     init {
         paint.textSize = 14f.dp2px()
-        mBitmap = BitmapFactory.decodeResource(resources, R.drawable.avatar)
+        mBitmap = BitmapFactory.decodeResource(resources, R.drawable.head)
         paint.getFontMetrics(mFontMetrics)
     }
 
