@@ -1,5 +1,7 @@
 package com.jiedian.scalableimageview
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -10,7 +12,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.OverScroller
 import com.jiedian.scaleableimageview.R
-import com.jiedian.scaleableimageview.dp2px
 
 /**
  * Author : Ray
@@ -69,7 +70,17 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
             smallScale = width / bitmap.width.toFloat()
         }
         bigScale *= BIG_SCALE_FACTOR
-        scaleAnimator = ObjectAnimator.ofFloat(this, "scaleFraction", smallScale, bigScale)
+        scaleAnimator = ObjectAnimator.ofFloat(this, "scaleFraction", smallScale, bigScale).apply {
+//            addListener(object : AnimatorListenerAdapter() {
+//                override fun onAnimationEnd(animation: Animator?) {
+//                    super.onAnimationEnd(animation)
+//                    if (!big) {
+//                        offsetX = 0f
+//                        offsetX = 0f
+//                    }
+//                }
+//            })
+        }
         scaleFraction = smallScale
         maxOffsetX = (bitmap.width * bigScale - w) / 2f
         maxOffsetY = (bitmap.height * bigScale - h) / 2f
@@ -146,6 +157,9 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
         if (big) {
             scaleAnimator?.reverse()
         } else {
+            offsetX = (e!!.x - width / 2f) * (1 - bigScale / smallScale)
+            offsetY = (e.y - height / 2f) * (1 - bigScale / smallScale)
+            fixMoveBoundary()
             scaleAnimator?.start()
         }
         big = big.not()

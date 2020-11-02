@@ -1,9 +1,10 @@
-package com.jiedian.scaleableimageview
+package com.jiedian.scalableimageview
 
 import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
+import com.jiedian.scaleableimageview.R
 
 class MainActivity : AppCompatActivity() {
 
