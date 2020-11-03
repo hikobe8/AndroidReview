@@ -1,7 +1,5 @@
 package com.jiedian.scalableimageview
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -9,6 +7,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.OverScroller
 import com.jiedian.scaleableimageview.R
@@ -33,7 +32,7 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
     private var smallScale = 0f
     private val gestureDetector: GestureDetector = GestureDetector(context, this)
     private var big = false
-    var scaleFraction = 0f
+    var currentScale = 0f
         set(value) {
             field = value
             invalidate()
@@ -48,12 +47,15 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
     //Scroller匀速滑动， 不能惯性滑动，所以使用OverScroller
     private var scroller: OverScroller = OverScroller(context)
 
+    private val scaleGestureDetector = ScaleGestureDetector(context, RayOnScaleGestureListener())
+
     init {
         gestureDetector.setOnDoubleTapListener(this)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return gestureDetector.onTouchEvent(event)
+//        return gestureDetector.onTouchEvent(event)
+        return scaleGestureDetector.onTouchEvent(event)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -70,18 +72,8 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
             smallScale = width / bitmap.width.toFloat()
         }
         bigScale *= BIG_SCALE_FACTOR
-        scaleAnimator = ObjectAnimator.ofFloat(this, "scaleFraction", smallScale, bigScale).apply {
-//            addListener(object : AnimatorListenerAdapter() {
-//                override fun onAnimationEnd(animation: Animator?) {
-//                    super.onAnimationEnd(animation)
-//                    if (!big) {
-//                        offsetX = 0f
-//                        offsetX = 0f
-//                    }
-//                }
-//            })
-        }
-        scaleFraction = smallScale
+        scaleAnimator = ObjectAnimator.ofFloat(this, "currentScale", smallScale, bigScale)
+        currentScale = smallScale
         maxOffsetX = (bitmap.width * bigScale - w) / 2f
         maxOffsetY = (bitmap.height * bigScale - h) / 2f
     }
@@ -89,9 +81,9 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.apply {
-            val scale = (scaleFraction - smallScale) / (bigScale - smallScale)
+            val scale = (currentScale - smallScale) / (bigScale - smallScale)
             translate(offsetX * scale, offsetY * scale)
-            scale(scaleFraction, scaleFraction, width / 2f, height / 2f)
+            scale(currentScale, currentScale, width / 2f, height / 2f)
             drawBitmap(bitmap, originalOffsetX, originalOffsetY, null)
         }
     }
@@ -174,5 +166,25 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
         return false
     }
 
+    inner class RayOnScaleGestureListener : ScaleGestureDetector.OnScaleGestureListener {
+
+        private var initScale = 0f
+
+        override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
+            initScale = currentScale
+            return true
+        }
+
+        override fun onScaleEnd(detector: ScaleGestureDetector?) {
+        }
+
+        override fun onScale(detector: ScaleGestureDetector?): Boolean {
+            val scaleFactor = detector?.scaleFactor
+            currentScale = initScale * scaleFactor!!
+            invalidate()
+            return false
+        }
+
+    }
 
 }
