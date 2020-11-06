@@ -54,8 +54,11 @@ class ScalableImageView(context: Context?, attrs: AttributeSet?) : View(context,
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        return gestureDetector.onTouchEvent(event)
-        return scaleGestureDetector.onTouchEvent(event)
+        var result = scaleGestureDetector.onTouchEvent(event)
+        if (!scaleGestureDetector.isInProgress) {
+            result = gestureDetector.onTouchEvent(event)
+        }
+        return result
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
