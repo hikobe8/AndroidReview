@@ -36,6 +36,7 @@ class MultiTouchView1(context: Context?, attrs: AttributeSet?) : View(context, a
                     downY = y.toInt()
                     originalOffsetX = offsetX
                     originalOffsetY = offsetY
+                    trackingPointerId = getPointerId(actionIndex)
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val index = findPointerIndex(trackingPointerId)
@@ -60,7 +61,7 @@ class MultiTouchView1(context: Context?, attrs: AttributeSet?) : View(context, a
                     val pointerId = getPointerId(actionIndex)
                     //判断抬起的手指为当前滑动的手指
                     if (pointerId == trackingPointerId) {
-                        val newIndex = if (actionIndex == pointerCount - 1) {
+                        var newIndex = if (actionIndex == pointerCount - 1) {
                             //已经为最后一个手指的话，获取前一个
                             pointerCount - 2
                         } else {
